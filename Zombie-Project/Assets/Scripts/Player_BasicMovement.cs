@@ -181,11 +181,11 @@ public class Player_BasicMovement : MonoBehaviour
 			player.GetComponent<Rigidbody> ().AddForce(player.transform.up * jumpForce);
 		}
 
-
+		/*
 		if (isTilting) {
 			this.camera.transform.localPosition = new Vector3 (0.5f, -0.2f, 0);
 		} else {
 			this.camera.transform.localPosition = Vector3.zero;
-		}
+		}*/
 	}
 }

@@ -9,6 +9,22 @@ public class Player_Camera_BasicRotation : MonoBehaviour
 
 	public GameObject playerCamera;
 
+	private float rotation;
+
+	public float Rotation
+	{
+		get
+		{
+			return rotation;
+		}
+
+		set 
+		{
+			if(value >= 310 || value <= 60)
+				rotation = value;
+		}
+	}
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -20,12 +36,16 @@ public class Player_Camera_BasicRotation : MonoBehaviour
 	void Update ()
 	{
 		Vector3 cameraRotation = playerCamera.transform.localEulerAngles;
-		
-		playerCamera.transform.localEulerAngles = new Vector3(cameraRotation.x - Input.GetAxis("Mouse Y") * 10, 
+
+		this.Rotation = cameraRotation.x - Input.GetAxis ("Mouse Y") * 10;
+
+		playerCamera.transform.localEulerAngles = new Vector3(this.Rotation, 
 		                                                      cameraRotation.y, 
 		                                                	  cameraRotation.z);
 
-		GameObject.Find ("Head").transform.localEulerAngles = cameraRotation;
+
+
+		//GameObject.Find ("Head").transform.localEulerAngles = cameraRotation;
 
 
 	}
