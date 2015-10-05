@@ -1,13 +1,13 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Shove_Weapon.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Bullet_Controller.cs">
     <Files>
-      <File FileName="Assets\Bullet_Controller.cs" Line="29" Column="30" />
+      <File FileName="Assets\Scripts\Zombie_BasicMovement.cs" Line="103" Column="44" />
       <File FileName="Assets\Scripts\Camera_FirstPersonView.cs" Line="1" Column="1" />
-      <File FileName="Assets\BaseballBat_Weapon.cs" Line="6" Column="24" />
-      <File FileName="Assets\Player_BasicAttacks.cs" Line="30" Column="20" />
-      <File FileName="Assets\Pistol_Weapon.cs" Line="21" Column="4" />
-      <File FileName="Assets\Shove_Weapon.cs" Line="38" Column="40" />
+      <File FileName="Assets\Scripts\Shove_Weapon.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\BaseballBat_Weapon.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Bullet_Controller.cs" Line="20" Column="19" />
+      <File FileName="Assets\Scripts\Zombie_Spawner.cs" Line="17" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -40,4 +40,16 @@ public class Shove_Weapon : MonoBehaviour
 		} else
 			yield return new WaitForSeconds (0.01f);
 	}
+
+	void OnTriggerEnter(Collider collider)
+	{
+		if (collider.name == "zombie") {
+			if(isShoving)
+			{	
+				Debug.Log("Adding force, shoving zombie away from player");
+				collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 5000f);
+			}
+		
+		}
+	}
 }

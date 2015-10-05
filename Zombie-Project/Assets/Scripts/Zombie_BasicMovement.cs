@@ -101,6 +101,7 @@ public class Zombie_BasicMovement : MonoBehaviour
 		{
 			zombie.transform.localEulerAngles = Vector3.Lerp(startRotation, endRotation, (Time.time - startTime)/2.0f);
 			yield return new WaitForSeconds (0.01f);
+
 		}
 	}
 

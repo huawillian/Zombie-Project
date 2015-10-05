@@ -80,4 +80,16 @@ public class BaseballBat_Weapon : MonoBehaviour
 			yield return new WaitForSeconds (0.01f);
 		}
 	}
+
+	void OnTriggerEnter(Collider collider)
+	{
+		if (collider.name == "zombie") {
+			if(isAttacking)
+			{	
+				collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.parent.transform.forward * 2500f);
+				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(50);
+			}
+		}
+		
+	}
 }

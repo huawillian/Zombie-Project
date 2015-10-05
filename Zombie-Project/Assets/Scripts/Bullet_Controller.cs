@@ -17,7 +17,7 @@ public class Bullet_Controller : MonoBehaviour
 
 		bulletDuration = 1f;
 		deathTime = Time.time + bulletDuration;
-		bulletSpeed = 20;
+		bulletSpeed = 40;
 
 		this.transform.localEulerAngles = this.transform.parent.localEulerAngles;
 		bulletRigidbody.velocity = this.transform.forward * bulletSpeed;
@@ -29,4 +29,12 @@ public class Bullet_Controller : MonoBehaviour
 			Destroy (this.gameObject);
 	}
 
+	void OnTriggerEnter(Collider collider)
+	{
+		if (collider.name == "zombie") {	
+			collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 1000f);
+			collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(25);
+			Destroy(this.gameObject);
+		}
+	}
 }
