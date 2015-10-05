@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class BaseballBat_Weapon : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class BaseballBat_Weapon : MonoBehaviour
 	public Vector3 endRotation;
 
 	public float attackDuration;
+
+	public GameObject weaponUI;
 
 	// Use this for initialization
 	void Start ()
@@ -48,6 +51,10 @@ public class BaseballBat_Weapon : MonoBehaviour
 			foreach (MeshRenderer r in renderers) {
 				r.enabled = true;
 			}
+		}
+
+		if (isEquipped) {
+			weaponUI.GetComponent<Text>().text = "Weapon: Baseball Bat";
 		}
 	}
 

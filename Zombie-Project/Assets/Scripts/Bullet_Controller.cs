@@ -27,6 +27,8 @@ public class Bullet_Controller : MonoBehaviour
 	{
 		if (Time.time > deathTime)
 			Destroy (this.gameObject);
+
+
 	}
 
 	void OnTriggerEnter(Collider collider)

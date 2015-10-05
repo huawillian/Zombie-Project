@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Player_Health : MonoBehaviour
 {
-
+	public GameObject healthUI;
+	
 	[SerializeField]
 	private int health = 100;
 	
@@ -30,7 +32,12 @@ public class Player_Health : MonoBehaviour
 			}
 		}
 	}
-	
+
+	void Update()
+	{
+		healthUI.GetComponent<Text> ().text = "Health: " + Health;
+	}
+
 	public void damagePlayer(int damage)
 	{
 		Health -= damage;

@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Pistol_Weapon : MonoBehaviour
 {
 	public GameObject bulletPrefab;
 	public bool isShooting;
 	public bool isEquipped;
+
+	public GameObject weaponUI;
 
 	// Use this for initialization
 	void Start ()
@@ -28,6 +31,10 @@ public class Pistol_Weapon : MonoBehaviour
 			foreach (MeshRenderer r in renderers) {
 				r.enabled = true;
 			}
+		}
+
+		if (isEquipped) {
+			weaponUI.GetComponent<Text>().text = "Weapon: Pistol";
 		}
 	}
 
