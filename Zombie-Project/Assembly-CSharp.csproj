@@ -45,6 +45,8 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Pistol_Ammo.cs" />
+     <Compile Include="Assets\Player_Hunger.cs" />
      <Compile Include="Assets\Scripts\BaseballBat_Weapon.cs" />
      <Compile Include="Assets\Scripts\Bullet_Controller.cs" />
      <Compile Include="Assets\Scripts\Camera_FirstPersonView.cs" />
@@ -61,17 +63,11 @@
      <Compile Include="Assets\Scripts\Zombie_BasicMovement.cs" />
      <Compile Include="Assets\Scripts\Zombie_Health.cs" />
      <Compile Include="Assets\Scripts\Zombie_Spawner.cs" />
- <Reference Include="UnityEngine.Advertisements">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
- </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Networking">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Analytics">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Cecil">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/Mono.Cecil.dll</HintPath>

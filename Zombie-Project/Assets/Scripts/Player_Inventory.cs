@@ -54,6 +54,15 @@ public class Player_Inventory : MonoBehaviour
 	public Dictionary<string,Sprite> items;
 	public List<string> grids;
 
+	public GameObject gridAction;
+
+	public GameObject ammoPrefab;
+	public GameObject foodPrefab;
+	public GameObject batPrefab;
+	public GameObject medkitPrefab;
+	public GameObject pistolPrefab;
+	public GameObject woodPrefab;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -129,6 +138,7 @@ public class Player_Inventory : MonoBehaviour
 		items ["Grid 2 1"] = pistolSprite;
 		items ["Grid 2 2"] = woodSprite;
 
+		selectedName = "";
 		InventoryUI.gameObject.SetActive (false);
 	}
 	
@@ -189,6 +199,37 @@ public class Player_Inventory : MonoBehaviour
 				this.gameObject.GetComponent<Player_Camera_BasicRotation>().enabled = false;
 			}
 		}
+
+		if (selectedName != "")
+		{
+			if(items[selectedName].Equals (medkitSprite))
+			{
+				gridAction.SetActive (true);
+				gridAction.GetComponentInChildren<UnityEngine.UI.Text>().text = "Heal";
+			}
+			else
+			if(items[selectedName].Equals (foodSprite))
+			{
+				gridAction.SetActive (true);
+				gridAction.GetComponentInChildren<UnityEngine.UI.Text>().text = "Eat";
+			}
+			else
+			if(items[selectedName].Equals (woodSprite))
+			{
+				gridAction.SetActive (true);
+				gridAction.GetComponentInChildren<UnityEngine.UI.Text>().text = "Throw";
+			}
+			else
+			if(items[selectedName].Equals (ammoSprite) || items[selectedName].Equals (pistolSprite) || items[selectedName].Equals (batSprite)) 
+			{
+				gridAction.SetActive (true);
+				gridAction.GetComponentInChildren<UnityEngine.UI.Text>().text = "Equip";
+			}
+		}
+		else
+		{
+			gridAction.SetActive (false);
+		}
 	}
 
 	public void LeftClickGrid(GameObject button)
@@ -196,9 +237,32 @@ public class Player_Inventory : MonoBehaviour
 
 		if (isSelected) 
 		{
-			Sprite tempImag = items[button.name];
-			items[button.name] = items[selectedName];
-			items[selectedName] = tempImag;
+			if(button.name == "Grid Trash") 
+			{
+				ThrowAwayItem(selectedName);
+			}
+			else if((!(items[selectedName].Equals(batSprite) || items[selectedName].Equals(pistolSprite))) && button.name == "Grid Weapon")
+			{
+
+			}
+			else if(!items[selectedName].Equals(ammoSprite) && button.name == "Grid Ammo")
+			{
+
+			}
+			else if(selectedName == "Grid Weapon" && !(items[button.name].Equals(pistolSprite) || items[button.name].Equals(batSprite)))
+			{
+
+			}
+			else if(!items[button.name].Equals(ammoSprite) && selectedName == "Grid Ammo")
+			{
+
+			}
+			else
+			{
+				Sprite tempImag = items[button.name];
+				items[button.name] = items[selectedName];
+				items[selectedName] = tempImag;
+			}
 
 			isSelected = false;
 			GameObject.Find(selectedName).GetComponent<Image>().color = gridColor;
@@ -206,11 +270,150 @@ public class Player_Inventory : MonoBehaviour
 
 		} else 
 		{
+			// Cannot select trash grid
+			if(button.name == "Grid Trash") return;
+			// Cannot select ammo grid
+			if(button.name == "Grid Ammo") return;
+			// Cannot select empty grid
+			if(items[button.name].Equals(gridImage)) return;
+
 			isSelected = true;
 			selectedName = button.name;
 			button.GetComponent<Image>().color = selectedColor;
 		}
 
+		if (items ["Grid Weapon"].Equals (pistolSprite))
+			this.GetComponent<Player_BasicAttacks>().EquipPistol();
+
+		if(items["Grid Weapon"].Equals(batSprite))
+		   this.GetComponent<Player_BasicAttacks>().EquipBat();
+
+		if(items["Grid Weapon"].Equals(gridImage))
+			this.GetComponent<Player_BasicAttacks>().Unequip();
+
 		Debug.Log (button.ToString());
 	}
+
+	public void ThrowAwayItem(string itemGridName)
+	{
+		if (items [itemGridName].Equals (ammoSprite)) {
+			Instantiate(ammoPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+		}
+
+		if (items [itemGridName].Equals (foodSprite)) {
+			Instantiate(foodPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+		}
+
+		if (items [itemGridName].Equals (medkitSprite)) {
+			Instantiate(medkitPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+		}
+
+		if (items [itemGridName].Equals (batSprite)) {
+			Instantiate(batPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+		}
+
+		if (items [itemGridName].Equals (woodSprite)) {
+			Instantiate(woodPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+		}
+
+		if (items [itemGridName].Equals (pistolSprite)) {
+			Instantiate(pistolPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+		}
+
+		items [itemGridName] = gridImage;
+	}
+
+	public void PickUpItem(string itemName)
+	{
+		Sprite sprite = new Sprite ();
+
+		if (itemName == "Ammo")
+			sprite = ammoSprite;
+		if (itemName == "Food")
+			sprite = foodSprite;
+		if (itemName == "Baseball Bat")
+			sprite = batSprite;
+		if (itemName == "Medkit")
+			sprite = medkitSprite;
+		if (itemName == "Pistol")
+			sprite = pistolSprite;
+		if (itemName == "Wood")
+			sprite = woodSprite;
+
+		foreach (string i in grids) {
+			if(items[i].Equals(gridImage))
+			{
+				items[i] = sprite;
+				return;
+			}
+		}
+	}
+
+	public void ActionGrid()
+	{
+		if (items [selectedName].Equals (medkitSprite))
+		{
+			// Heal Player
+			this.GetComponent<Player_Health>().healPlayer(20);
+			items[selectedName] = gridImage;
+		}
+
+		if (items [selectedName].Equals (foodSprite))
+		{
+			// Decrease Hunger Level
+			this.gameObject.GetComponent<Player_Hunger>().AddHunger(20);
+			items[selectedName] = gridImage;
+		}
+
+		if (items [selectedName].Equals (woodSprite))
+		{
+			// Throw wood in front of player
+			ThrowAwayItem(selectedName);
+			items[selectedName] = gridImage;
+		}
+
+		if (items [selectedName].Equals (pistolSprite) || items [selectedName].Equals (batSprite))
+		{
+			// Swap items with the current weapon
+
+			Sprite tempImag = items["Grid Weapon"];
+			items["Grid Weapon"] = items[selectedName];
+			items[selectedName] = tempImag;
+
+			if (items ["Grid Weapon"].Equals (pistolSprite))
+				this.GetComponent<Player_BasicAttacks>().EquipPistol();
+			
+			if(items["Grid Weapon"].Equals(batSprite))
+				this.GetComponent<Player_BasicAttacks>().EquipBat();
+			
+			if(items["Grid Weapon"].Equals(gridImage))
+				this.GetComponent<Player_BasicAttacks>().Unequip();
+		}
+
+		if (items [selectedName].Equals (ammoSprite))
+		{
+			// Increase Player Ammo Supply
+			this.gameObject.GetComponentInChildren<Pistol_Ammo>().AddAmmo(10);
+
+			if(items["Grid Ammo"].Equals(gridImage))
+			{
+				items["Grid Ammo"] = ammoSprite;
+			}
+
+			items[selectedName] = gridImage;
+		}
+
+		isSelected = false;
+		GameObject.Find(selectedName).GetComponent<Image>().color = gridColor;
+		selectedName = "";
+	}
+
+	/*
+	void OnGUI () {
+		if(GUI.Button(new Rect(20,40,80,20), "Pickup Medkit"))
+		{	
+			PickUpItem("Medkit");
+			
+		}
+	}*/
 }

@@ -38,6 +38,7 @@ public class Player_BasicAttacks : MonoBehaviour
 			shoveWeapon.GetComponent<Shove_Weapon>().StartCoroutine("Attack");
 		}
 
+		/*
 		if (Input.GetKeyDown (KeyCode.Q)) {
 			if(isPistolEquipped)
 			{
@@ -53,6 +54,33 @@ public class Player_BasicAttacks : MonoBehaviour
 				isPistolEquipped = true;
 				pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = true;
 			}
-		}
+		}*/
+
 	}
+
+	public void EquipPistol()
+	{
+		isBatEquipped = false;
+		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = false;
+		isPistolEquipped = true;
+		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = true;
+	}
+
+	public void EquipBat()
+	{
+		isPistolEquipped = false;
+		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = false;
+		isBatEquipped = true;
+		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = true;
+	}
+
+	public void Unequip()
+	{
+		isPistolEquipped = false;
+		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = false;
+		isBatEquipped = false;
+		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = false;
+	}
+
+
 }
