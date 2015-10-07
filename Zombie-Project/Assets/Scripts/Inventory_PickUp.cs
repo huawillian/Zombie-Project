@@ -6,12 +6,13 @@ using UnityEngine.UI;
 public class Inventory_PickUp : MonoBehaviour
 {
 	public GameObject actionUI;
-
-
+	
 	LinkedList<GameObject> itemsInRange;
 	GameObject closestItem;
 
 	Player_Inventory inventoryScript;
+
+	public bool scriptActive = true;
 
 	// Use this for initialization
 	void Start () 
@@ -24,6 +25,8 @@ public class Inventory_PickUp : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!scriptActive)
+			return;
 
 		if (itemsInRange.Count > 0)
 		{
@@ -65,6 +68,15 @@ public class Inventory_PickUp : MonoBehaviour
 		}
 	}
 
+	public void disableScript ()
+	{
+		scriptActive = false;
+	}
+
+	public void enableScript()
+	{
+		scriptActive = true;
+	}
 
 	void OnTriggerEnter(Collider other)
 	{

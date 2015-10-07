@@ -19,6 +19,8 @@ public class Player_Death : MonoBehaviour
 
 		if (isDead)
 		{
+			Cursor.visible = true;
+
 			// Make the first button. If it is pressed, Application.Loadlevel (1) will be executed
 			if(GUI.Button(new Rect(20,40,80,20), "Respawn"))
 			{
@@ -26,7 +28,8 @@ public class Player_Death : MonoBehaviour
 				this.gameObject.transform.position = Vector3.zero;
 
 				this.gameObject.GetComponent<Player_Death>().isDead = false;
-				
+				Cursor.visible = false;
+
 				this.gameObject.GetComponent<Player_BasicAttacks>().enabled = true;
 				this.gameObject.GetComponent<Player_BasicMovement>().enabled = true;
 				this.gameObject.GetComponent<Player_BasicRotation>().enabled = true;
