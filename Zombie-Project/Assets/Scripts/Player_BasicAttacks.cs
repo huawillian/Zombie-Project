@@ -27,10 +27,14 @@ public class Player_BasicAttacks : MonoBehaviour
 			Debug.Log("Primary Attack.");
 
 			if(isBatEquipped)
+			{
 				baseballbatWeapon.GetComponent<BaseballBat_Weapon>().StartCoroutine("Attack");
+			}
 
 			if(isPistolEquipped)
+			{
 				pistolWeapon.GetComponent<Pistol_Weapon>().StartCoroutine("Attack");
+			}
 		}
 
 		if (Input.GetMouseButtonDown (1)) {

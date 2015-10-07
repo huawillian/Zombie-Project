@@ -374,7 +374,9 @@ public class Player_Inventory : MonoBehaviour
 		if (items [selectedName].Equals (woodSprite))
 		{
 			// Throw wood in front of player
-			ThrowAwayItem(selectedName);
+			GameObject tempObj =  Instantiate(woodPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject;
+			tempObj.name = woodPrefab.name;
+			StartCoroutine("ThrowWood", tempObj);
 			items[selectedName] = gridImage;
 		}
 
@@ -414,6 +416,15 @@ public class Player_Inventory : MonoBehaviour
 		selectedName = "";
 	}
 
+
+	IEnumerator ThrowWood(GameObject wood)
+	{
+		wood.GetComponent<Rigidbody>().AddForce((this.transform.forward + Vector3.up) * 250f);
+
+		yield return new WaitForSeconds (2.0f);
+
+		this.GetComponent<Player_Noise>().GenerateNoiseAtPosWithDistance(wood.transform.position, 5f);
+	}
 	/*
 	void OnGUI () {
 		if(GUI.Button(new Rect(20,40,80,20), "Pickup Medkit"))

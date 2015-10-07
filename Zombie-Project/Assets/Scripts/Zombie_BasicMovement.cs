@@ -3,29 +3,26 @@ using System.Collections;
 
 public class Zombie_BasicMovement : MonoBehaviour
 {
+	enum ZombieState{Idle, Move, Attack};
+	ZombieState state;
+
 	GameObject zombie;
 	GameObject player;
 	Rigidbody zombieRigidbody;
-	bool patrol;
-	bool attack;
 
 	// Use this for initialization
 	void Start ()
 	{
-		if (!zombie)
-			zombie = this.gameObject;
-
-		if (!zombieRigidbody)
-			zombieRigidbody = zombie.GetComponent<Rigidbody> ();
-
-		patrol = true;
+		zombie = this.gameObject;
+		zombieRigidbody = zombie.GetComponent<Rigidbody> ();
+		state = ZombieState.Idle;
 
 		StartCoroutine ("StartPatrol");
 	}
 
 	IEnumerator StartPatrol()
 	{
-		while (patrol)
+		while (state == ZombieState.Idle)
 		{
 			int move = Random.Range(0, 3);
 
@@ -52,13 +49,19 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	IEnumerator StartAttack()
 	{
-		while (attack)
+		while (state == ZombieState.Attack)
 		{
 			zombieRigidbody.velocity = zombie.transform.forward;
 			zombie.transform.LookAt(player.transform);
 			zombie.transform.localEulerAngles = new Vector3(0, zombie.transform.localEulerAngles.y ,0);
 
-			yield return new WaitForSeconds(0.01f);
+			if(Vector3.Distance(zombie.transform.position, player.transform.position) > 10f)
+			{
+				state = ZombieState.Idle;
+				StartCoroutine("StartPatrol");
+			}
+
+			yield return new WaitForSeconds(0.1f);
 		}
 	}
 
@@ -112,14 +115,43 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.name.Equals ("Player")) {
-			patrol = false;
-			attack = true;
+		if (collider.name.Equals ("Player") && state == ZombieState.Idle) {
+			state = ZombieState.Attack;
 			player = collider.gameObject;
 			StartCoroutine("StartAttack");
 		}
 	}
 
+	public void MoveToPos(Vector3 pos)
+	{
+		if (state == ZombieState.Move) {
+			StopCoroutine("MoveToTarget");
+		}
+
+		state = ZombieState.Move;
+		player = null;
+
+		StartCoroutine ("MoveToTarget", pos);
+	}
+
+
+	public IEnumerator MoveToTarget(Vector3 pos)
+	{
+		while (state == ZombieState.Move)
+		{
+			zombieRigidbody.velocity = zombie.transform.forward;
+			zombie.transform.LookAt(pos);
+			zombie.transform.localEulerAngles = new Vector3(0, zombie.transform.localEulerAngles.y ,0);
+			
+			if(Vector3.Distance(zombie.transform.position, pos) < 2f)
+			{
+				state = ZombieState.Idle;
+				StartCoroutine("StartPatrol");
+			}
+			
+			yield return new WaitForSeconds(0.1f);
+		}
+	}
 
 
 	// Update is called once per frame

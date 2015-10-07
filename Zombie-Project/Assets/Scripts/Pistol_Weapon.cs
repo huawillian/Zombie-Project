@@ -43,6 +43,8 @@ public class Pistol_Weapon : MonoBehaviour
 	IEnumerator Attack()
 	{
 		if (!isShooting && isEquipped && ammoScript.Ammo > 0) {
+
+			this.GetComponentInParent<Player_Noise>().GenerateNoiseAtPlayerWithDistance(15f);
 			ammoScript.AddAmmo(-1);
 			isShooting = true;
 			GameObject bullet = GameObject.Instantiate (bulletPrefab, this.transform.position, Quaternion.identity) as GameObject;

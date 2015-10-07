@@ -15,7 +15,7 @@ public class Zombie_Spawner : MonoBehaviour
 	{
 		while (true)
 		{
-			Instantiate(zombiePrefab, this.transform.position, Quaternion.identity);
+			(Instantiate(zombiePrefab, this.transform.position, Quaternion.identity) as GameObject).name = zombiePrefab.name;
 			yield return new WaitForSeconds((float) Random.Range(5,10));
 		}
 	}

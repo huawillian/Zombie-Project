@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Zombie_Health : MonoBehaviour
 {
+	public GameObject corpsePrefab;
+
 	[SerializeField]
 	private int health = 100;
 
@@ -15,6 +17,8 @@ public class Zombie_Health : MonoBehaviour
 			else if(value <= 0)
 			{
 				health= 0;
+				GameObject tmp = Instantiate(corpsePrefab,this.gameObject.transform.position, Quaternion.identity) as GameObject;
+				tmp.name = corpsePrefab.name;
 				Destroy(this.gameObject);
 			}
 			else 

@@ -7,7 +7,7 @@ public class Inventory_PickUp : MonoBehaviour
 {
 	public GameObject actionUI;
 	
-	LinkedList<GameObject> itemsInRange;
+	public LinkedList<GameObject> itemsInRange;
 	GameObject closestItem;
 
 	Player_Inventory inventoryScript;
@@ -46,7 +46,7 @@ public class Inventory_PickUp : MonoBehaviour
 
 			if(closestItem != null)
 			{
-				actionUI.SetActive (true);
+				//actionUI.SetActive (true);
 				actionUI.GetComponent<Text>().text = "Press 'E' to Pickup " + closestItem.name;
 			}
 
@@ -63,7 +63,7 @@ public class Inventory_PickUp : MonoBehaviour
 		} 
 		else
 		{
-			actionUI.SetActive (false);
+			//actionUI.SetActive (false);
 			closestItem = null;
 		}
 	}

@@ -7,7 +7,7 @@ public class Player_Search : MonoBehaviour
 {
 	Inventory_PickUp pickupScript;
 
-	LinkedList<GameObject> searchInRange;
+	public LinkedList<GameObject> searchInRange;
 	GameObject closestSearch;
 
 	public GameObject actionUI;
@@ -60,18 +60,18 @@ public class Player_Search : MonoBehaviour
 
 			if(closestSearch != null && !isCurrentlySearching)
 			{
-				actionUI.SetActive (true);
+				//actionUI.SetActive (true);
 				actionUI.GetComponent<Text>().text = "Press 'E' to Search " + closestSearch.name;
 			}
 			else 
 			if(closestSearch != null && isCurrentlySearching)
 			{
-				actionUI.SetActive (true);
+				//actionUI.SetActive (true);
 				actionUI.GetComponent<Text>().text = "Currently Searching... (" + (timeDown + 3 - Time.time) + ")";
 			}
 			else
 			{
-				actionUI.SetActive (false);
+				//actionUI.SetActive (false);
 			}
 
 			if(Input.GetKeyDown(KeyCode.E))
@@ -92,10 +92,12 @@ public class Player_Search : MonoBehaviour
 			{
 				if(closestSearch != null)
 				{
+					if(Time.time > timeDown + 3) this.GetComponent<Player_Noise>().GenerateNoiseAtPlayerWithDistance(5f);
+
 					closestSearch.GetComponent<Search_Content>().setSearched();
 					instantiateItems( closestSearch.GetComponent<Search_Content>().getContent(), closestSearch.transform.position + closestSearch.transform.forward);
 					closestSearch = null;
-
+					pickupScript.enableScript();
 					isCurrentlySearching = false;
 
 					this.GetComponent<Player_BasicAttacks>().enabled = true;
@@ -120,9 +122,10 @@ public class Player_Search : MonoBehaviour
 		else
 		{
 			pickupScript.enableScript();
-			actionUI.SetActive (false);
+			//actionUI.SetActive (false);
 			closestSearch = null;
 		}
+
 	}
 
 	void instantiateItems (LinkedList<string> listOfItems, Vector3 pos)

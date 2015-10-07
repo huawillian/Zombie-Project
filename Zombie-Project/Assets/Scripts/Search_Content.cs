@@ -29,7 +29,7 @@ public class Search_Content : MonoBehaviour
 
 		if (this.gameObject.name == "Fridge") 
 		{
-			int amountFood = Random.Range(1,5);
+			int amountFood = Random.Range(1,6);
 
 			for(int i=0; i<amountFood; i++)
 			{
@@ -39,21 +39,21 @@ public class Search_Content : MonoBehaviour
 		else
 		if (this.gameObject.name == "Drawers") 
 		{
-			int amountItems = Random.Range(1,3);
+			int amountItems = Random.Range(1,4);
 			
 			for(int i=0; i<amountItems; i++)
 			{
-				itemsInSearch.AddFirst(itemIndex[Random.Range(0,9)]);
+				itemsInSearch.AddFirst(itemIndex[Random.Range(0,10)]);
 			}
 		}
 		else
 		if (this.gameObject.name == "Corpse") 
 		{
-			int amountItems = Random.Range(0,1);
-			
+			int amountItems = Random.Range(0,2);
+
 			for(int i=0; i<amountItems; i++)
 			{
-				itemsInSearch.AddFirst(itemIndex[Random.Range(0,9)]);
+				itemsInSearch.AddFirst(itemIndex[Random.Range(0,10)]);
 			}
 		}
 	}
