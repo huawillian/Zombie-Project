@@ -188,6 +188,8 @@ public class Player_Inventory : MonoBehaviour
 				this.gameObject.GetComponent<Player_BasicMovement>().enabled = true;
 				this.gameObject.GetComponent<Player_BasicRotation>().enabled = true;
 				this.gameObject.GetComponent<Player_Camera_BasicRotation>().enabled = true;
+
+				Cursor.visible = false;
 			}
 			else
 			{
@@ -197,6 +199,8 @@ public class Player_Inventory : MonoBehaviour
 				this.gameObject.GetComponent<Player_BasicMovement>().enabled = false;
 				this.gameObject.GetComponent<Player_BasicRotation>().enabled = false;
 				this.gameObject.GetComponent<Player_Camera_BasicRotation>().enabled = false;
+
+				Cursor.visible = true;
 			}
 		}
 
@@ -297,27 +301,27 @@ public class Player_Inventory : MonoBehaviour
 	public void ThrowAwayItem(string itemGridName)
 	{
 		if (items [itemGridName].Equals (ammoSprite)) {
-			Instantiate(ammoPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+			(Instantiate(ammoPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = ammoPrefab.name;
 		}
 
 		if (items [itemGridName].Equals (foodSprite)) {
-			Instantiate(foodPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+			(Instantiate(foodPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = foodPrefab.name;
 		}
 
 		if (items [itemGridName].Equals (medkitSprite)) {
-			Instantiate(medkitPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+			(Instantiate(medkitPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = medkitPrefab.name;
 		}
 
 		if (items [itemGridName].Equals (batSprite)) {
-			Instantiate(batPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+			(Instantiate(batPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = batPrefab.name;
 		}
 
 		if (items [itemGridName].Equals (woodSprite)) {
-			Instantiate(woodPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+			(Instantiate(woodPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = woodPrefab.name;
 		}
 
 		if (items [itemGridName].Equals (pistolSprite)) {
-			Instantiate(pistolPrefab, this.transform.position + this.transform.forward, Quaternion.identity);
+			(Instantiate(pistolPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = pistolPrefab.name;
 		}
 
 		items [itemGridName] = gridImage;
@@ -347,6 +351,8 @@ public class Player_Inventory : MonoBehaviour
 				return;
 			}
 		}
+
+		Debug.Log ("Inventory is full...");
 	}
 
 	public void ActionGrid()

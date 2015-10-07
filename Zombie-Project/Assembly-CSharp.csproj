@@ -45,11 +45,11 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Pistol_Ammo.cs" />
-     <Compile Include="Assets\Player_Hunger.cs" />
+     <Compile Include="Assets\Inventory_PickUp.cs" />
      <Compile Include="Assets\Scripts\BaseballBat_Weapon.cs" />
      <Compile Include="Assets\Scripts\Bullet_Controller.cs" />
      <Compile Include="Assets\Scripts\Camera_FirstPersonView.cs" />
+     <Compile Include="Assets\Scripts\Pistol_Ammo.cs" />
      <Compile Include="Assets\Scripts\Pistol_Weapon.cs" />
      <Compile Include="Assets\Scripts\Player_BasicAttacks.cs" />
      <Compile Include="Assets\Scripts\Player_BasicMovement.cs" />
@@ -57,6 +57,7 @@
      <Compile Include="Assets\Scripts\Player_Camera_BasicRotation.cs" />
      <Compile Include="Assets\Scripts\Player_Death.cs" />
      <Compile Include="Assets\Scripts\Player_Health.cs" />
+     <Compile Include="Assets\Scripts\Player_Hunger.cs" />
      <Compile Include="Assets\Scripts\Player_Inventory.cs" />
      <Compile Include="Assets\Scripts\Shove_Weapon.cs" />
      <Compile Include="Assets\Scripts\Zombie_Attack.cs" />

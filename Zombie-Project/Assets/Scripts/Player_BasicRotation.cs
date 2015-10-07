@@ -13,6 +13,8 @@ public class Player_BasicRotation : MonoBehaviour
 	{
 		if (!player)
 			player = this.gameObject;
+
+		Cursor.visible = false;
 	}
 	
 	// Update is called once per frame
@@ -21,7 +23,7 @@ public class Player_BasicRotation : MonoBehaviour
 		Vector3 playerRotation = player.transform.localEulerAngles;
 
 		player.transform.localEulerAngles = new Vector3(playerRotation.x, 
-		                                                playerRotation.y + Input.GetAxis("Mouse X") * 10, 
+		                                                playerRotation.y + Input.GetAxis("Mouse X") * 20, 
 		                                                playerRotation.z);
 	}
 }
