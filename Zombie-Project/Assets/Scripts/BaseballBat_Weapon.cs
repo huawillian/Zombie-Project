@@ -20,6 +20,11 @@ public class BaseballBat_Weapon : MonoBehaviour
 
 	public GameObject weaponUI;
 
+	public AudioClip swingSound;
+	public AudioClip hitSound;
+
+	public Player_Stamina staminaScript;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -34,6 +39,7 @@ public class BaseballBat_Weapon : MonoBehaviour
 
 		attackDuration = 0.3f;
 
+		staminaScript = this.GetComponentInParent <Player_Stamina>();
 	}
 	
 	// Update is called once per frame
@@ -60,7 +66,11 @@ public class BaseballBat_Weapon : MonoBehaviour
 
 	IEnumerator Attack()
 	{
-		if (!isAttacking && isEquipped) {
+		if (!isAttacking && isEquipped && staminaScript.state != Player_Stamina.StaminaState.Recover)
+		{
+			this.GetComponentInParent<Player_Stamina>().UseStamina(20.0f);
+			AudioSource.PlayClipAtPoint(swingSound, this.transform.position);
+
 			isAttacking = true;
 
 			float startTime = Time.time;
@@ -93,6 +103,7 @@ public class BaseballBat_Weapon : MonoBehaviour
 		if (collider.name == "zombie") {
 			if(isAttacking)
 			{	
+				AudioSource.PlayClipAtPoint(hitSound, this.transform.position);
 				this.GetComponentInParent<Player_Noise>().GenerateNoiseAtPlayerWithDistance(8f);
 				collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.parent.transform.forward * 2500f);
 				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(50);

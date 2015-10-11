@@ -9,6 +9,8 @@ public class Bullet_Controller : MonoBehaviour
 	public float bulletDuration;
 	public float bulletSpeed;
 
+	public AudioClip shotZombieSound;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -34,6 +36,7 @@ public class Bullet_Controller : MonoBehaviour
 	void OnTriggerEnter(Collider collider)
 	{
 		if (collider.name == "zombie") {	
+			AudioSource.PlayClipAtPoint(shotZombieSound, this.transform.position);
 			collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 1000f);
 			collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(25);
 			Destroy(this.gameObject);

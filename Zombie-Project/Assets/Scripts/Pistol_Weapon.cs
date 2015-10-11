@@ -12,6 +12,8 @@ public class Pistol_Weapon : MonoBehaviour
 
 	public Pistol_Ammo ammoScript;
 
+	public AudioClip gunshotSound;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -44,6 +46,7 @@ public class Pistol_Weapon : MonoBehaviour
 	{
 		if (!isShooting && isEquipped && ammoScript.Ammo > 0) {
 
+			AudioSource.PlayClipAtPoint(gunshotSound, this.transform.position);
 			this.GetComponentInParent<Player_Noise>().GenerateNoiseAtPlayerWithDistance(15f);
 			ammoScript.AddAmmo(-1);
 			isShooting = true;

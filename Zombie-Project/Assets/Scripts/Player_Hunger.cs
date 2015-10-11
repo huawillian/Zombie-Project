@@ -7,7 +7,7 @@ public class Player_Hunger : MonoBehaviour
 	public GameObject hungerUI;
 
 	private int hunger;
-	
+
 	public int Hunger
 	{
 		get {

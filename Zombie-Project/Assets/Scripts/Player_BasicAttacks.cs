@@ -11,6 +11,8 @@ public class Player_BasicAttacks : MonoBehaviour
 	public GameObject pistolWeapon;
 	public GameObject shoveWeapon;
 
+	public AudioClip pistolEquipSound;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -64,6 +66,9 @@ public class Player_BasicAttacks : MonoBehaviour
 
 	public void EquipPistol()
 	{
+		if(!isPistolEquipped)
+			AudioSource.PlayClipAtPoint (pistolEquipSound, this.transform.position);
+
 		isBatEquipped = false;
 		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = false;
 		isPistolEquipped = true;

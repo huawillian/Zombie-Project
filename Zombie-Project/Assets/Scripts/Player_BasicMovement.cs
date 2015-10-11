@@ -22,9 +22,25 @@ public class Player_BasicMovement : MonoBehaviour
 
 	public GameObject camera;
 
+	public AudioClip walkSound;
+	public AudioClip runSound;
+
+	public AudioSource walkSource;
+	public AudioSource runSource;
+
+	public Player_Stamina staminaScript;
+
 	// Use this for initialization
 	void Start ()
 	{
+		walkSource = this.gameObject.AddComponent<AudioSource>();
+		runSource = this.gameObject.AddComponent<AudioSource>();
+		walkSource.clip = walkSound;
+		walkSource.loop = true;
+		runSource.clip = runSound;
+		runSource.loop = true;
+
+
 		if (!player)
 			player = this.gameObject;
 
@@ -46,11 +62,40 @@ public class Player_BasicMovement : MonoBehaviour
 		if(!this.camera)
 			this.camera = this.gameObject.GetComponentInChildren<Camera> ().gameObject;
 
+		staminaScript = this.GetComponent <Player_Stamina>();
+		StartCoroutine ("SprintStamina");
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
+		if ((Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.D)) && !isSprinting) {
+
+			if(!walkSource.isPlaying)
+				walkSource.Play ();
+		} else
+		{
+			if(walkSource.isPlaying) 
+				walkSource.Stop();
+		}
+
+		if (isSprinting) {
+			if (walkSource.isPlaying)
+				walkSource.Stop ();
+
+			if (Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.D)) {
+				if (!runSource.isPlaying)
+					runSource.Play ();
+			} else {
+				if (runSource.isPlaying) 
+					runSource.Stop ();
+			}
+		} else {
+			if(runSource.isPlaying) 
+				runSource.Stop();
+		}
+
+
 		// WASD controller
 		if(Input.GetKey(KeyCode.W))
 		{
@@ -145,8 +190,9 @@ public class Player_BasicMovement : MonoBehaviour
 		}
 
 		// Shift
-		if (Input.GetKey (KeyCode.LeftShift)) {
-			if (!isCrouching && !isTilting && !isJumping)
+		if (Input.GetKey (KeyCode.LeftShift))
+		{
+			if (!isCrouching && !isTilting && !isJumping && staminaScript.state != Player_Stamina.StaminaState.Recover)
 				isSprinting = true;
 		} else {
 			isSprinting = false;
@@ -177,8 +223,13 @@ public class Player_BasicMovement : MonoBehaviour
 		}
 
 		// Space
-		if (Input.GetKeyDown (KeyCode.Space)) {
-			player.GetComponent<Rigidbody> ().AddForce(player.transform.up * jumpForce);
+		if (Input.GetKeyDown (KeyCode.Space))
+		{
+			if(staminaScript.state != Player_Stamina.StaminaState.Recover)
+			{
+				staminaScript.UseStamina(10.0f);
+				player.GetComponent<Rigidbody> ().AddForce(player.transform.up * jumpForce);
+			}
 		}
 
 		/*
@@ -187,5 +238,16 @@ public class Player_BasicMovement : MonoBehaviour
 		} else {
 			this.camera.transform.localPosition = Vector3.zero;
 		}*/
+	}
+
+	IEnumerator SprintStamina()
+	{
+		while (true) {
+			yield return new WaitForSeconds(0.1f);
+			if(isSprinting)
+			{
+				staminaScript.UseStamina(2.0f);
+			}
+		}
 	}
 }

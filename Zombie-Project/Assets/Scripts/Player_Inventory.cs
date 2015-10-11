@@ -63,6 +63,10 @@ public class Player_Inventory : MonoBehaviour
 	public GameObject pistolPrefab;
 	public GameObject woodPrefab;
 
+	public AudioClip openInventorySound;
+	public AudioClip eatFoodSound;
+	public AudioClip pickUpSound;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -193,6 +197,7 @@ public class Player_Inventory : MonoBehaviour
 			}
 			else
 			{
+				AudioSource.PlayClipAtPoint (openInventorySound, this.transform.position);
 				InventoryUI.SetActive(true);
 
 				this.gameObject.GetComponent<Player_BasicAttacks>().enabled = false;
@@ -329,6 +334,7 @@ public class Player_Inventory : MonoBehaviour
 
 	public void PickUpItem(string itemName)
 	{
+		AudioSource.PlayClipAtPoint (pickUpSound, this.transform.position);
 		Sprite sprite = new Sprite ();
 
 		if (itemName == "Ammo")
@@ -367,6 +373,7 @@ public class Player_Inventory : MonoBehaviour
 		if (items [selectedName].Equals (foodSprite))
 		{
 			// Decrease Hunger Level
+			AudioSource.PlayClipAtPoint(eatFoodSound, this.transform.position);
 			this.gameObject.GetComponent<Player_Hunger>().AddHunger(20);
 			items[selectedName] = gridImage;
 		}

@@ -14,6 +14,8 @@ public class Inventory_PickUp : MonoBehaviour
 
 	public bool scriptActive = true;
 
+	public AudioClip pickupSound;
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -54,6 +56,7 @@ public class Inventory_PickUp : MonoBehaviour
 			{
 				if(closestItem != null)
 				{
+					AudioSource.PlayClipAtPoint(pickupSound, this.transform.position);
 					inventoryScript.PickUpItem(closestItem.name);
 					itemsInRange.Remove(closestItem);
 					Destroy(closestItem.gameObject);

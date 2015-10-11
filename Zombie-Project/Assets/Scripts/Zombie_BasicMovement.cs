@@ -10,6 +10,9 @@ public class Zombie_BasicMovement : MonoBehaviour
 	GameObject player;
 	Rigidbody zombieRigidbody;
 
+	public AudioClip idleSound;
+	public AudioClip attackSound;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -18,6 +21,22 @@ public class Zombie_BasicMovement : MonoBehaviour
 		state = ZombieState.Idle;
 
 		StartCoroutine ("StartPatrol");
+		StartCoroutine ("PlayIdleSound");
+	}
+
+	IEnumerator PlayIdleSound()
+	{
+		yield return new WaitForSeconds((float)Random.Range(0,10));
+
+		while(true)
+		{
+			if(this.state == ZombieState.Idle)
+			{
+				AudioSource.PlayClipAtPoint(idleSound, this.transform.position);
+			}
+
+			yield return new WaitForSeconds((float)Random.Range(0,10));
+		}
 	}
 
 	IEnumerator StartPatrol()
@@ -49,6 +68,9 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	IEnumerator StartAttack()
 	{
+		Debug.Log ("Start Attack");
+		AudioSource.PlayClipAtPoint(attackSound, this.transform.position);
+
 		while (state == ZombieState.Attack)
 		{
 			zombieRigidbody.velocity = zombie.transform.forward;

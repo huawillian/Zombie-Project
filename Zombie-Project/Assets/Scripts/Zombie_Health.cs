@@ -8,6 +8,9 @@ public class Zombie_Health : MonoBehaviour
 	[SerializeField]
 	private int health = 100;
 
+	public AudioClip damageSound;
+	public AudioClip deathSound;
+
 	public int Health{
 		get{
 			return health;
@@ -16,6 +19,7 @@ public class Zombie_Health : MonoBehaviour
 			if(value > 100) health = 100;
 			else if(value <= 0)
 			{
+				AudioSource.PlayClipAtPoint(deathSound, this.transform.position);
 				health= 0;
 				GameObject tmp = Instantiate(corpsePrefab,this.gameObject.transform.position, Quaternion.identity) as GameObject;
 				tmp.name = corpsePrefab.name;
@@ -23,6 +27,7 @@ public class Zombie_Health : MonoBehaviour
 			}
 			else 
 			{
+				AudioSource.PlayClipAtPoint(damageSound, this.transform.position);
 				health = value;
 			}
 		}
