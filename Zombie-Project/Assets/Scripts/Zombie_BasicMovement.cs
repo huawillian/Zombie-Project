@@ -13,6 +13,8 @@ public class Zombie_BasicMovement : MonoBehaviour
 	public AudioClip idleSound;
 	public AudioClip attackSound;
 
+	public NavMeshAgent agent;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -22,6 +24,8 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 		StartCoroutine ("StartPatrol");
 		StartCoroutine ("PlayIdleSound");
+
+		agent = this.GetComponent<NavMeshAgent> ();
 	}
 
 	IEnumerator PlayIdleSound()
@@ -73,12 +77,15 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 		while (state == ZombieState.Attack)
 		{
-			zombieRigidbody.velocity = zombie.transform.forward;
-			zombie.transform.LookAt(player.transform);
-			zombie.transform.localEulerAngles = new Vector3(0, zombie.transform.localEulerAngles.y ,0);
+			//zombieRigidbody.velocity = zombie.transform.forward;
+			//zombie.transform.LookAt(player.transform);
+			//zombie.transform.localEulerAngles = new Vector3(0, zombie.transform.localEulerAngles.y ,0);
 
-			if(Vector3.Distance(zombie.transform.position, player.transform.position) > 10f)
+			agent.SetDestination(player.transform.position);
+
+			if(Vector3.Distance(zombie.transform.position, player.transform.position) > 20f)
 			{
+				agent.SetDestination(this.transform.position);
 				state = ZombieState.Idle;
 				StartCoroutine("StartPatrol");
 			}
@@ -137,9 +144,13 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.name.Equals ("Player") && state == ZombieState.Idle) {
+		if (collider.name.Equals ("Player") && (state == ZombieState.Idle || state == ZombieState.Move)) {
 			state = ZombieState.Attack;
 			player = collider.gameObject;
+
+			StopCoroutine("MoveToTarget");
+			agent.SetDestination(this.transform.position);
+
 			StartCoroutine("StartAttack");
 		}
 	}
@@ -159,14 +170,19 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	public IEnumerator MoveToTarget(Vector3 pos)
 	{
-		while (state == ZombieState.Move)
+		while (state == ZombieState.Move && state != ZombieState.Attack)
 		{
+			/*
 			zombieRigidbody.velocity = zombie.transform.forward;
 			zombie.transform.LookAt(pos);
 			zombie.transform.localEulerAngles = new Vector3(0, zombie.transform.localEulerAngles.y ,0);
-			
+			*/
+
+			agent.SetDestination(pos);
+
 			if(Vector3.Distance(zombie.transform.position, pos) < 2f)
 			{
+				agent.SetDestination(this.transform.position);
 				state = ZombieState.Idle;
 				StartCoroutine("StartPatrol");
 			}

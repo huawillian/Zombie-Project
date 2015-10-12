@@ -45,7 +45,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Player_Stamina.cs" />
+     <Compile Include="Assets\Fantasy Skybox FREE\Scripts\FSPlayer.cs" />
      <Compile Include="Assets\Scripts\BaseballBat_Weapon.cs" />
      <Compile Include="Assets\Scripts\Bullet_Controller.cs" />
      <Compile Include="Assets\Scripts\Camera_FirstPersonView.cs" />
@@ -64,6 +64,7 @@
      <Compile Include="Assets\Scripts\Player_Inventory.cs" />
      <Compile Include="Assets\Scripts\Player_Noise.cs" />
      <Compile Include="Assets\Scripts\Player_Search.cs" />
+     <Compile Include="Assets\Scripts\Player_Stamina.cs" />
      <Compile Include="Assets\Scripts\Search_Content.cs" />
      <Compile Include="Assets\Scripts\Shove_Weapon.cs" />
      <Compile Include="Assets\Scripts\Zombie_Attack.cs" />
@@ -82,6 +83,12 @@
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{D8B5E8EF-A8DA-3C7F-B4CB-B8B2E3F9AB5B}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
+    <ProjectReference Include="Assembly-UnityScript-firstpass.unityproj">
+      <Project>{EEE38416-2EB9-724A-E823-3C5BA4AC9E10}</Project>      <Name>Assembly-UnityScript-firstpass</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
