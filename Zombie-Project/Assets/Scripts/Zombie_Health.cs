@@ -36,6 +36,9 @@ public class Zombie_Health : MonoBehaviour
 	public void damageZombie(int damage)
 	{
 		Health -= damage;
+		this.GetComponent<Zombie_BasicMovement> ().isDamaged = true;
+		this.GetComponent<Zombie_BasicMovement> ().StopCoroutine ("ResetDamaged");
+		this.GetComponent<Zombie_BasicMovement> ().StartCoroutine ("ResetDamaged");
 	}
 
 	// Use this for initialization

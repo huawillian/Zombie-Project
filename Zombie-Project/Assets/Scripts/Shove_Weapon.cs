@@ -6,6 +6,15 @@ public class Shove_Weapon : MonoBehaviour
 	public bool isShoving;
 	public bool isEquipped;
 
+	public Vector3 originalPosition;
+	public Vector3 originalRotation;
+	
+	public Vector3 startPosition;
+	public Vector3 startRotation;
+	
+	public Vector3 endPosition;
+	public Vector3 endRotation;
+
 	public AudioClip hitSound;
 
 	public Player_Stamina staminaScript;
@@ -15,6 +24,15 @@ public class Shove_Weapon : MonoBehaviour
 	{
 		isShoving = false;
 		staminaScript = this.GetComponentInParent<Player_Stamina> ();
+
+		originalPosition = this.transform.localPosition; // -0.3 0.1 0.2 pos 0 0 0 rot
+		originalRotation = this.transform.localEulerAngles; // -0.3 0.1 0.2 pos 0 0 0 rot
+		
+		startPosition = new Vector3 (0, 0, -2.0f);
+		startRotation = new Vector3 (0, 0, 0);
+		
+		endPosition = new Vector3 (0, 0, 0.1f);
+		endRotation = new Vector3 (0, 0, 0);	
 	}
 	
 	// Update is called once per frame
@@ -39,10 +57,27 @@ public class Shove_Weapon : MonoBehaviour
 	{
 		if (!isShoving && staminaScript.state != Player_Stamina.StaminaState.Recover)
 		{
-			staminaScript.UseStamina(20.0f);
+			staminaScript.UseStamina(10.0f);
 
 			isShoving = true;
-			yield return new WaitForSeconds (0.5f);
+
+			float startTime = Time.time;
+			float endTime = startTime + 0.2f;
+			
+			while (Time.time < endTime)
+			{
+				float currTime = Time.time;
+				float progress = (currTime - startTime) / 0.2f;
+				this.transform.localPosition = Vector3.Lerp (startPosition, endPosition, progress);
+				this.transform.localEulerAngles = Vector3.Lerp (startRotation, endRotation, progress);
+				yield return new WaitForSeconds (0.01f);
+			}
+
+			yield return new WaitForSeconds(0.3f);
+
+			this.transform.localPosition = originalPosition;
+			this.transform.localEulerAngles = originalRotation;
+
 			isShoving = false;
 		} else
 			yield return new WaitForSeconds (0.01f);
@@ -55,9 +90,24 @@ public class Shove_Weapon : MonoBehaviour
 			{	
 				AudioSource.PlayClipAtPoint(hitSound, this.transform.position);
 				Debug.Log("Adding force, shoving zombie away from player");
-				collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 8000f);
+
+				StartCoroutine("ShoveZombie", collider.gameObject);
 			}
-		
 		}
 	}
+
+	IEnumerator ShoveZombie(GameObject zombie)
+	{
+		zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(0);
+		zombie.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 500f);
+
+		yield return new WaitForSeconds (0.8f);
+
+		zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(0);
+		zombie.transform.parent.gameObject.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+
+		yield return new WaitForSeconds (0.8f);
+		zombie.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (0);
+	}
+
 }

@@ -16,7 +16,9 @@ public class Zombie_Attack : MonoBehaviour
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.name == "Renderer and Collider" && collider.transform.parent.name == "Player") {	
+		if (collider.name == "Renderer and Collider" && collider.transform.parent.name == "Player")
+		{	
+			collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
 			collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 500f);
 			collider.gameObject.transform.parent.gameObject.GetComponent<Player_Health>().damagePlayer(5);
 		}

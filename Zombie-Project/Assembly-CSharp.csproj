@@ -47,6 +47,7 @@
   <ItemGroup>
      <Compile Include="Assets\Campfire\Script\FireLightScript.cs" />
      <Compile Include="Assets\Fantasy Skybox FREE\Scripts\FSPlayer.cs" />
+     <Compile Include="Assets\Player_Timer.cs" />
      <Compile Include="Assets\Scripts\BaseballBat_Weapon.cs" />
      <Compile Include="Assets\Scripts\Bullet_Controller.cs" />
      <Compile Include="Assets\Scripts\Camera_FirstPersonView.cs" />

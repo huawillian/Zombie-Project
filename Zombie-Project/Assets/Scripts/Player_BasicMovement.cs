@@ -13,12 +13,10 @@ public class Player_BasicMovement : MonoBehaviour
 	public float sprintSpeed;
 	public float crouchSpeed;
 	public float jumpForce;
-	public float tiltSpeed;
 
 	public bool isJumping;
 	public bool isCrouching;
 	public bool isSprinting;
-	public bool isTilting;
 
 	public GameObject camera;
 
@@ -29,6 +27,9 @@ public class Player_BasicMovement : MonoBehaviour
 	public AudioSource runSource;
 
 	public Player_Stamina staminaScript;
+
+	public bool isJumpReady;
+	public bool isGrounded;
 
 	// Use this for initialization
 	void Start ()
@@ -54,145 +55,108 @@ public class Player_BasicMovement : MonoBehaviour
 			crouchSpeed = 6;
 
 		if (jumpForce == 0)
-			jumpForce = 200;
+			jumpForce = 400;
 
-		if (tiltSpeed == 0)
-			tiltSpeed = 0;
 
 		if(!this.camera)
 			this.camera = this.gameObject.GetComponentInChildren<Camera> ().gameObject;
 
 		staminaScript = this.GetComponent <Player_Stamina>();
 		StartCoroutine ("SprintStamina");
+
+		isJumpReady = true;
+		isGrounded = true;
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		if ((Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.D)) && !isSprinting) {
+		// Play Walking and Running Sound when grounded and moving
+		if (isGrounded) {
+			if ((Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.D)) && !isSprinting) {
 
-			if(!walkSource.isPlaying)
-				walkSource.Play ();
-		} else
-		{
-			if(walkSource.isPlaying) 
-				walkSource.Stop();
-		}
+				if (!walkSource.isPlaying)
+					walkSource.Play ();
+			} else {
+				if (walkSource.isPlaying) 
+					walkSource.Stop ();
+			}
 
-		if (isSprinting) {
-			if (walkSource.isPlaying)
-				walkSource.Stop ();
+			if (isSprinting) {
+				if (walkSource.isPlaying)
+					walkSource.Stop ();
 
-			if (Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.D)) {
-				if (!runSource.isPlaying)
-					runSource.Play ();
+				if (Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.D)) {
+					if (!runSource.isPlaying)
+						runSource.Play ();
+				} else {
+					if (runSource.isPlaying) 
+						runSource.Stop ();
+				}
 			} else {
 				if (runSource.isPlaying) 
 					runSource.Stop ();
 			}
-		} else {
-			if(runSource.isPlaying) 
-				runSource.Stop();
 		}
 
-
-		// WASD controller
-		if(Input.GetKey(KeyCode.W))
-		{
-			//player.transform.position += this.GetComponent<Camera>().transform.forward;
-
-			if(isSprinting)
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.forward * sprintSpeed);
+		// Basic Movement for the player when WASD is pressed
+		// Movement speed depends on Player state, crouching, sprinting, jumping, walking
+		if (isGrounded) {
+			// WASD controller
+			if (Input.GetKey (KeyCode.W)) {
+				if (isSprinting) {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 10f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				} else
+			if (isCrouching) {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				} else
+			if (isJumping) {
+				} else {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				}
 			}
-			else
-			if(isCrouching)
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.forward * crouchSpeed);
+			if (Input.GetKey (KeyCode.A)) {
+				if (isSprinting) {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.right * -10f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				} else
+				if (isCrouching) {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.right * -2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				} else
+				if (isJumping) {
+				} else {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.right * -5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				}
 			}
-			else
-			if(isJumping || isTilting)
-			{
-				//player.GetComponent<Rigidbody> ().AddForce(Vector3.zero);
+			if (Input.GetKey (KeyCode.S)) {
+				if (isSprinting) {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -10f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				} else
+				if (isCrouching) {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				} else
+				if (isJumping) {
+				} else {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				}
 			}
-			else
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.forward * defaultSpeed);
-			}
-		}
-		if(Input.GetKey(KeyCode.A))
-		{
-			//player.transform.position -= this.GetComponent<Camera>().transform.right;
-
-			if(isSprinting)
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.right * sprintSpeed * -1.0f);
-			}
-			else
-				if(isCrouching)
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.right * crouchSpeed  * -1.0f);
-			}
-			else
-				if(isJumping || isTilting)
-			{
-				//player.GetComponent<Rigidbody> ().AddForce(Vector3.zero);
-			}
-			else
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.right * defaultSpeed * -1.0f);
-			}
-		}
-		if(Input.GetKey(KeyCode.S))
-		{
-			//player.transform.position -= this.GetComponent<Camera>().transform.forward;
-
-			if(isSprinting)
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.forward * sprintSpeed * -1.0f);
-			}
-			else
-				if(isCrouching)
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.forward * crouchSpeed  * -1.0f);
-			}
-			else
-				if(isJumping || isTilting)
-			{
-				//player.GetComponent<Rigidbody> ().AddForce(Vector3.zero);
-			}
-			else
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.forward * defaultSpeed * -1.0f);
-			}
-		}
-		if(Input.GetKey(KeyCode.D))
-		{
-			//player.transform.position += this.GetComponent<Camera>().transform.right;
-			if(isSprinting)
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.right * sprintSpeed);
-			}
-			else
-				if(isCrouching)
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.right * crouchSpeed);
-			}
-			else
-				if(isJumping || isTilting)
-			{
-				//player.GetComponent<Rigidbody> ().AddForce(Vector3.zero);
-			}
-			else
-			{
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.right * defaultSpeed);
+			if (Input.GetKey (KeyCode.D)) {
+				if (isSprinting) {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.right * 10f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				} else
+				if (isCrouching) {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.right * 2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				} else
+				if (isJumping) {
+				} else {
+					player.GetComponent<Rigidbody> ().velocity = player.transform.right * 5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+				}
 			}
 		}
 
 		// Shift
 		if (Input.GetKey (KeyCode.LeftShift))
 		{
-			if (!isCrouching && !isTilting && !isJumping && staminaScript.state != Player_Stamina.StaminaState.Recover)
+			if (!isCrouching && !isJumping && staminaScript.state != Player_Stamina.StaminaState.Recover)
 				isSprinting = true;
 		} else {
 			isSprinting = false;
@@ -201,21 +165,13 @@ public class Player_BasicMovement : MonoBehaviour
 		// Ctrl
 		if (Input.GetKey (KeyCode.LeftControl)) 
 		{
-			if(!isSprinting && !isTilting && !isJumping)
+			if(!isSprinting && !isJumping)
 				isCrouching = true;
 		} else {
 			isCrouching = false;
 		}
 
-		// Alt
-		if (Input.GetKey (KeyCode.LeftAlt)) 
-		{
-			if(!isSprinting && !isCrouching && !isJumping)
-				isTilting = true;
-		} else {
-			isTilting = false;
-		}
-
+		// Crouching sets player height to lower value
 		if (isCrouching) {
 			player.transform.localScale = new Vector3(1, 0.5f, 1);
 		} else {
@@ -225,19 +181,29 @@ public class Player_BasicMovement : MonoBehaviour
 		// Space
 		if (Input.GetKeyDown (KeyCode.Space))
 		{
-			if(staminaScript.state != Player_Stamina.StaminaState.Recover)
+			if(staminaScript.state != Player_Stamina.StaminaState.Recover && isJumpReady && isGrounded && !isCrouching)
 			{
+				isJumpReady = false;
+				isJumping = true;
+
+				// Set isJumpReady to true after 1 second
+				StartCoroutine("ResetJump");
 				staminaScript.UseStamina(10.0f);
 				player.GetComponent<Rigidbody> ().AddForce(player.transform.up * jumpForce);
 			}
 		}
 
-		/*
-		if (isTilting) {
-			this.camera.transform.localPosition = new Vector3 (0.5f, -0.2f, 0);
-		} else {
-			this.camera.transform.localPosition = Vector3.zero;
-		}*/
+		// Set is Grounded
+		if (Physics.Raycast (transform.position, Vector3.down, 2.5f)) {
+			isGrounded = true;
+			isJumping = false;
+		}
+	}
+
+	IEnumerator ResetJump()
+	{
+		yield return new WaitForSeconds (1.0f);
+		isJumpReady = true;
 	}
 
 	IEnumerator SprintStamina()

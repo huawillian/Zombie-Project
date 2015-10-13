@@ -43,7 +43,9 @@ public class Player_Camera_BasicRotation : MonoBehaviour
 		                                                      cameraRotation.y, 
 		                                                	  cameraRotation.z);
 
+		this.GetComponentInChildren<Light> ().gameObject.transform.localEulerAngles = playerCamera.transform.localEulerAngles;
 
+		this.GetComponentInChildren<Pistol_Weapon> ().gameObject.transform.localEulerAngles = playerCamera.transform.localEulerAngles;
 
 		//GameObject.Find ("Head").transform.localEulerAngles = cameraRotation;
 

@@ -305,6 +305,10 @@ public class Player_Inventory : MonoBehaviour
 
 	public void ThrowAwayItem(string itemGridName)
 	{
+		if (items [itemGridName].Equals (trashSprite) || items [itemGridName].Equals (gridImage)) {
+			return;
+		}
+
 		if (items [itemGridName].Equals (ammoSprite)) {
 			(Instantiate(ammoPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = ammoPrefab.name;
 		}
@@ -366,7 +370,7 @@ public class Player_Inventory : MonoBehaviour
 		if (items [selectedName].Equals (medkitSprite))
 		{
 			// Heal Player
-			this.GetComponent<Player_Health>().healPlayer(20);
+			this.GetComponent<Player_Health>().healPlayer(40);
 			items[selectedName] = gridImage;
 		}
 
@@ -430,7 +434,7 @@ public class Player_Inventory : MonoBehaviour
 
 		yield return new WaitForSeconds (2.0f);
 
-		this.GetComponent<Player_Noise>().GenerateNoiseAtPosWithDistance(wood.transform.position, 5f);
+		this.GetComponent<Player_Noise>().GenerateNoiseAtPosWithDistance(wood.transform.position, 10f);
 	}
 	/*
 	void OnGUI () {
@@ -440,4 +444,12 @@ public class Player_Inventory : MonoBehaviour
 			
 		}
 	}*/
+
+	public void DropAllItems()
+	{
+		foreach(string i in grids)
+		{
+			ThrowAwayItem(i);
+		}
+	}
 }
