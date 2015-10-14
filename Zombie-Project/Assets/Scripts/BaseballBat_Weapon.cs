@@ -17,9 +17,7 @@ public class BaseballBat_Weapon : MonoBehaviour
 	public Vector3 endRotation;
 
 	public float attackDuration;
-
-	public GameObject weaponUI;
-
+	
 	public AudioClip swingSound;
 	public AudioClip hitSound;
 
@@ -35,7 +33,7 @@ public class BaseballBat_Weapon : MonoBehaviour
 		startRotation = new Vector3 (-80f, 0, 0);
 
 		endPosition = new Vector3 (-0.3f, 0.5f, 0.8f);
-		endRotation = new Vector3 (-7f, -25f, 0);	
+		endRotation = new Vector3 (40f, -25f, 0);	
 
 		attackDuration = 0.3f;
 
@@ -59,9 +57,6 @@ public class BaseballBat_Weapon : MonoBehaviour
 			}
 		}
 
-		if (isEquipped) {
-			weaponUI.GetComponent<Text>().text = "Weapon: Baseball Bat";
-		}
 	}
 
 	IEnumerator Attack()
@@ -101,11 +96,19 @@ public class BaseballBat_Weapon : MonoBehaviour
 	void OnTriggerEnter(Collider collider)
 	{
 		if (collider.name == "zombie") {
-			if(isAttacking)
-			{	
-				AudioSource.PlayClipAtPoint(hitSound, this.transform.position);
-				this.GetComponentInParent<Player_Noise>().GenerateNoiseAtPlayerWithDistance(8f);
-				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(50);
+			if (isAttacking) {	
+				AudioSource.PlayClipAtPoint (hitSound, this.transform.position);
+				this.GetComponentInParent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (8f);
+				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (50);
+			}
+		} else
+		if (collider.name == "Box")
+		{
+			if (isAttacking) {	
+				AudioSource.PlayClipAtPoint (hitSound, this.transform.position);
+				collider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(500,  collider.transform.position - this.transform.forward, 5);
+				this.GetComponentInParent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (8f);
+				collider.gameObject.GetComponent<Box_Controller> ().Health -= 25;
 			}
 		}
 		

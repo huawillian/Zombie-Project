@@ -18,6 +18,8 @@ public class Player_Hunger : MonoBehaviour
 			if(value < 0) hunger = 0;
 			else if (value > 100) hunger = 100;
 			else hunger = value;
+
+			hungerUI.GetComponent<Slider>().value = hunger;
 		}
 	}
 
@@ -44,6 +46,5 @@ public class Player_Hunger : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		hungerUI.GetComponent<Text> ().text = "Hunger: " + Hunger;
 	}
 }

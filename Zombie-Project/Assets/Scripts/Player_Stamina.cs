@@ -26,6 +26,7 @@ public class Player_Stamina : MonoBehaviour
 
 	public bool transition;
 	public GameObject staminaUI;
+	public GameObject staminaColorUI;
 
 	// Idle, regenerate stamina based off hunger
 	// Lose stamina based off action (only if in Idle state prior), then wait a bit before returning to Idle state
@@ -54,18 +55,28 @@ public class Player_Stamina : MonoBehaviour
 
 			if(state == StaminaState.Idle)
 			{
-				if(hungerScript.Hunger > 50)
+				if(hungerScript.Hunger > 80)
 				{
-					Stamina +=  1;
+					Stamina +=  2f;
+				}
+				else
+				if(hungerScript.Hunger > 60)
+				{
+					Stamina +=  1f;
+				}
+				else
+				if(hungerScript.Hunger > 40)
+				{
+					Stamina +=  0.5f;
 				}
 				else
 				if(hungerScript.Hunger > 25)
 				{
-					Stamina += 0.5f;
+					Stamina += 0.3f;
 				}
 				else
 				{
-					Stamina += 0.25f;
+					Stamina += 0.2f;
 				}
 			}
 		}
@@ -79,8 +90,8 @@ public class Player_Stamina : MonoBehaviour
 
 		while (Stamina < 100)
 		{
-			Stamina += 1.0f;
-			yield return new WaitForSeconds(0.1f);
+			Stamina += 0.1f;
+			yield return new WaitForSeconds(0.01f);
 		}
 
 		state = StaminaState.Idle;
@@ -115,8 +126,14 @@ public class Player_Stamina : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		staminaUI.GetComponent<Text> ().text = "Stamina: " + Stamina;
+		staminaUI.GetComponent<Slider> ().value = Stamina;
 
-		if(state == StaminaState.Recover) staminaUI.GetComponent<Text>().text += " (Recovering...)";
+		if (state == StaminaState.Recover) {
+			staminaColorUI.GetComponent<Image> ().color = Color.red;
+		} else
+		{
+			staminaColorUI.GetComponent<Image> ().color = new Color(200,200,0);
+
+		}
 	}
 }

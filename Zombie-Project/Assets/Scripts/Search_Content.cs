@@ -22,7 +22,7 @@ public class Search_Content : MonoBehaviour
 		itemIndex.Add (3, "Ammo");
 		itemIndex.Add (4, "Ammo");
 		itemIndex.Add (5, "Medkit");
-		itemIndex.Add (6, "Medkit");
+		itemIndex.Add (6, "Ammo");
 		itemIndex.Add (7, "Wood");
 		itemIndex.Add (8, "Ammo");
 		itemIndex.Add (9, "Medkit");
@@ -55,6 +55,15 @@ public class Search_Content : MonoBehaviour
 			{
 				itemsInSearch.AddFirst(itemIndex[Random.Range(0,10)]);
 			}
+		}
+		else
+		if (this.gameObject.name == "Box") 
+		{
+			itemsInSearch.AddFirst(itemIndex[Random.Range(0,10)]);
+			itemsInSearch.AddFirst(itemIndex[7]);
+			itemsInSearch.AddFirst(itemIndex[7]);
+			itemsInSearch.AddFirst(itemIndex[7]);
+			itemsInSearch.AddFirst(itemIndex[7]);
 		}
 	}
 

@@ -94,6 +94,16 @@ public class Shove_Weapon : MonoBehaviour
 				StartCoroutine("ShoveZombie", collider.gameObject);
 			}
 		}
+		else
+		if (collider.name == "Box")
+		{
+			if (isShoving) {	
+				AudioSource.PlayClipAtPoint (hitSound, this.transform.position);
+				collider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(1000,  collider.transform.position - this.transform.forward, 5);
+				this.GetComponentInParent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (3f);
+				collider.gameObject.GetComponent<Box_Controller> ().Health -= 15;
+			}
+		}
 	}
 
 	IEnumerator ShoveZombie(GameObject zombie)
@@ -102,12 +112,18 @@ public class Shove_Weapon : MonoBehaviour
 		zombie.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 500f);
 
 		yield return new WaitForSeconds (0.8f);
-
-		zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(0);
-		zombie.transform.parent.gameObject.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		if (zombie)
+		{
+			zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(0);
+			zombie.transform.parent.gameObject.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		}
 
 		yield return new WaitForSeconds (0.8f);
-		zombie.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (0);
+		if (zombie)
+		{
+			zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(0);
+			zombie.transform.parent.gameObject.GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		}
 	}
 
 }

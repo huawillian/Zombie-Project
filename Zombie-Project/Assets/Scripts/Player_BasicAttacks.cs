@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Player_BasicAttacks : MonoBehaviour
 {
@@ -13,12 +14,16 @@ public class Player_BasicAttacks : MonoBehaviour
 
 	public AudioClip pistolEquipSound;
 
+	public GameObject pistolUI;
+	public GameObject batUI;
+
 	// Use this for initialization
 	void Start ()
 	{
 		baseballbatWeapon = GameObject.Find ("Baseball Bat Weapon");
 		pistolWeapon = GameObject.Find ("Pistol Weapon");
 		shoveWeapon = GameObject.Find ("Shove Weapon");
+		Unequip ();
 	}
 	
 	// Update is called once per frame
@@ -73,6 +78,10 @@ public class Player_BasicAttacks : MonoBehaviour
 		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = false;
 		isPistolEquipped = true;
 		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = true;
+
+		batUI.SetActive (false);
+		pistolUI.SetActive (true);
+
 	}
 
 	public void EquipBat()
@@ -81,7 +90,9 @@ public class Player_BasicAttacks : MonoBehaviour
 		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = false;
 		isBatEquipped = true;
 		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = true;
-	}
+
+		batUI.SetActive (true);
+		pistolUI.SetActive (false);	}
 
 	public void Unequip()
 	{
@@ -89,6 +100,9 @@ public class Player_BasicAttacks : MonoBehaviour
 		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = false;
 		isBatEquipped = false;
 		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = false;
+
+		batUI.SetActive (false);
+		pistolUI.SetActive (false);
 	}
 
 

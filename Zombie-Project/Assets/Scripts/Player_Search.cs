@@ -96,6 +96,13 @@ public class Player_Search : MonoBehaviour
 					{
 						closestSearch.GetComponent<Search_Content>().setSearched();
 						instantiateItems( closestSearch.GetComponent<Search_Content>().getContent(), closestSearch.transform.position + closestSearch.transform.forward);
+
+						if(closestSearch.name == "Corpse")
+						{
+							searchInRange.Remove(closestSearch);
+							Destroy(closestSearch);
+						}
+
 						closestSearch = null;
 						pickupScript.enableScript();
 						isCurrentlySearching = false;

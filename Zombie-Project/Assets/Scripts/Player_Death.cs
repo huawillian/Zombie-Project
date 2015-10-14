@@ -103,7 +103,9 @@ public class Player_Death : MonoBehaviour
 		this.gameObject.GetComponent<Player_Stamina>().Stamina = 100;
 		this.gameObject.GetComponent<Inventory_PickUp> ().itemsInRange.Clear ();
 		this.gameObject.GetComponent<Player_BasicAttacks> ().Unequip ();
+		this.gameObject.GetComponentInChildren<Pistol_Ammo> ().UseAmmo (this.gameObject.GetComponentInChildren<Pistol_Ammo> ().Ammo);
 
+		this.gameObject.GetComponent<Instruction_Disable> ().ShowInstructions ();
 	}
 
 	public void setDeath()

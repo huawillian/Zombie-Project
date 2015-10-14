@@ -7,9 +7,7 @@ public class Pistol_Weapon : MonoBehaviour
 	public GameObject bulletPrefab;
 	public bool isShooting;
 	public bool isEquipped;
-
-	public GameObject weaponUI;
-
+	
 	public Pistol_Ammo ammoScript;
 
 	public AudioClip gunshotSound;
@@ -43,10 +41,6 @@ public class Pistol_Weapon : MonoBehaviour
 				r.enabled = true;
 			}
 		}
-
-		if (isEquipped) {
-			weaponUI.GetComponent<Text>().text = "Weapon: Pistol";
-		}
 	}
 
 	IEnumerator Attack()
@@ -55,7 +49,7 @@ public class Pistol_Weapon : MonoBehaviour
 
 			AudioSource.PlayClipAtPoint(gunshotSound, this.transform.position);
 			this.GetComponentInParent<Player_Noise>().GenerateNoiseAtPlayerWithDistance(30f);
-			ammoScript.AddAmmo(-1);
+			ammoScript.UseAmmo(1);
 			isShooting = true;
 			GameObject bullet = GameObject.Instantiate (bulletPrefab, this.transform.parent.GetComponentInChildren<Camera>().gameObject.transform.position + Vector3.down, Quaternion.identity) as GameObject;
 			bullet.transform.parent = this.transform.parent;

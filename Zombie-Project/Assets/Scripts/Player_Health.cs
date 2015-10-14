@@ -15,10 +15,14 @@ public class Player_Health : MonoBehaviour
 			return health;
 		}
 		set {
-			if(value > 100) health = 100;
+			if(value > 100)
+			{
+				health = 100;
+			}
 			else if(value <= 0)
 			{
 				health= 0;
+
 				this.gameObject.GetComponent<Player_Death>().setDeath();
 
 				this.gameObject.GetComponent<Player_BasicAttacks>().enabled = false;
@@ -42,6 +46,8 @@ public class Player_Health : MonoBehaviour
 			{
 				health = value;
 			}
+
+			healthUI.GetComponent<Slider>().value = health;
 		}
 	}
 
@@ -75,7 +81,6 @@ public class Player_Health : MonoBehaviour
 
 	void Update()
 	{
-		healthUI.GetComponent<Text> ().text = "Health: " + Health;
 	}
 
 	public void damagePlayer(int damage)
