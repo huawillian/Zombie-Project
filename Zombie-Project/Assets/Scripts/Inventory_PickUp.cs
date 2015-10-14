@@ -46,15 +46,21 @@ public class Inventory_PickUp : MonoBehaviour
 				}
 			}
 
-			if(closestItem != null)
+			if(closestItem != null && inventoryScript.numFree > 0)
 			{
 				//actionUI.SetActive (true);
 				actionUI.GetComponent<Text>().text = "Press 'E' to Pickup " + closestItem.name;
 			}
 
+			if(closestItem != null && inventoryScript.numFree == 0)
+			{
+				//actionUI.SetActive (true);
+				actionUI.GetComponent<Text>().text = "Inventory is full";
+			}
+
 			if(Input.GetKeyDown(KeyCode.E))
 			{
-				if(closestItem != null)
+				if(closestItem != null && inventoryScript.numFree > 0)
 				{
 					AudioSource.PlayClipAtPoint(pickupSound, this.transform.position);
 					inventoryScript.PickUpItem(closestItem.name);

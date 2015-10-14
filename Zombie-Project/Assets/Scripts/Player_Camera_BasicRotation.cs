@@ -37,7 +37,7 @@ public class Player_Camera_BasicRotation : MonoBehaviour
 	{
 		Vector3 cameraRotation = playerCamera.transform.localEulerAngles;
 
-		this.Rotation = cameraRotation.x - Input.GetAxis ("Mouse Y") * 10;
+		this.Rotation = cameraRotation.x - Input.GetAxis ("Mouse Y") * 3;
 
 		playerCamera.transform.localEulerAngles = new Vector3(this.Rotation, 
 		                                                      cameraRotation.y, 

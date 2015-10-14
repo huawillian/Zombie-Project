@@ -23,7 +23,7 @@ public class Player_BasicRotation : MonoBehaviour
 		Vector3 playerRotation = player.transform.localEulerAngles;
 
 		player.transform.localEulerAngles = new Vector3(playerRotation.x, 
-		                                                playerRotation.y + Input.GetAxis("Mouse X") * 20, 
+		                                                playerRotation.y + Input.GetAxis("Mouse X") * 5, 
 		                                                playerRotation.z);
 	}
 }

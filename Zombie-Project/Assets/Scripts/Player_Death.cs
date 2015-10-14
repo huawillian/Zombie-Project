@@ -91,6 +91,19 @@ public class Player_Death : MonoBehaviour
 		this.gameObject.GetComponent<Rigidbody>().isKinematic = false;
 		
 		this.gameObject.GetComponent<Player_Timer>().StartTimer();
+
+		this.gameObject.GetComponent<Player_Stamina>().enabled = true;
+		this.gameObject.GetComponent<Player_ActionUI>().enabled = true;
+		this.gameObject.GetComponent<Player_Search>().enabled = true;
+		this.gameObject.GetComponent<Inventory_PickUp>().enabled = true;
+		this.gameObject.GetComponent<Player_Hunger>().enabled = true;
+		this.gameObject.GetComponent<Player_Inventory>().enabled = true;
+
+		this.gameObject.GetComponent<Player_Hunger> ().Hunger = 100;
+		this.gameObject.GetComponent<Player_Stamina>().Stamina = 100;
+		this.gameObject.GetComponent<Inventory_PickUp> ().itemsInRange.Clear ();
+		this.gameObject.GetComponent<Player_BasicAttacks> ().Unequip ();
+
 	}
 
 	public void setDeath()

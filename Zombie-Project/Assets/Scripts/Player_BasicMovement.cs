@@ -158,6 +158,8 @@ public class Player_BasicMovement : MonoBehaviour
 		{
 			if (!isCrouching && !isJumping && staminaScript.state != Player_Stamina.StaminaState.Recover)
 				isSprinting = true;
+			else 
+				isSprinting = false;
 		} else {
 			isSprinting = false;
 		}

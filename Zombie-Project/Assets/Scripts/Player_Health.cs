@@ -30,6 +30,13 @@ public class Player_Health : MonoBehaviour
 				this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
 
 				this.gameObject.GetComponent<Player_Timer>().StopTimer();
+
+				this.gameObject.GetComponent<Player_Stamina>().enabled = false;
+				this.gameObject.GetComponent<Player_ActionUI>().enabled = false;
+				this.gameObject.GetComponent<Player_Search>().enabled = false;
+				this.gameObject.GetComponent<Inventory_PickUp>().enabled = false;
+				this.gameObject.GetComponent<Player_Hunger>().enabled = false;
+				this.gameObject.GetComponent<Player_Inventory>().enabled = false;
 			}
 			else 
 			{

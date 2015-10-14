@@ -92,18 +92,29 @@ public class Player_Search : MonoBehaviour
 			{
 				if(closestSearch != null)
 				{
-					if(Time.time > timeDown + 3) this.GetComponent<Player_Noise>().GenerateNoiseAtPlayerWithDistance(5f);
+					if(Time.time > timeDown + 3)
+					{
+						closestSearch.GetComponent<Search_Content>().setSearched();
+						instantiateItems( closestSearch.GetComponent<Search_Content>().getContent(), closestSearch.transform.position + closestSearch.transform.forward);
+						closestSearch = null;
+						pickupScript.enableScript();
+						isCurrentlySearching = false;
 
-					closestSearch.GetComponent<Search_Content>().setSearched();
-					instantiateItems( closestSearch.GetComponent<Search_Content>().getContent(), closestSearch.transform.position + closestSearch.transform.forward);
-					closestSearch = null;
-					pickupScript.enableScript();
-					isCurrentlySearching = false;
-
-					this.GetComponent<Player_BasicAttacks>().enabled = true;
-					this.GetComponent<Player_BasicMovement>().enabled = true;
-					this.GetComponent<Player_BasicRotation>().enabled = true;
-					this.GetComponent<Player_Camera_BasicRotation>().enabled = true;
+						this.GetComponent<Player_BasicAttacks>().enabled = true;
+						this.GetComponent<Player_BasicMovement>().enabled = true;
+						this.GetComponent<Player_BasicRotation>().enabled = true;
+						this.GetComponent<Player_Camera_BasicRotation>().enabled = true;
+					}
+					else
+					{
+						pickupScript.enableScript();
+						isCurrentlySearching = false;
+						
+						this.GetComponent<Player_BasicAttacks>().enabled = true;
+						this.GetComponent<Player_BasicMovement>().enabled = true;
+						this.GetComponent<Player_BasicRotation>().enabled = true;
+						this.GetComponent<Player_Camera_BasicRotation>().enabled = true;
+					}
 				}
 			}
 

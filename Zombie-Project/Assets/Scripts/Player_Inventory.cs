@@ -67,6 +67,8 @@ public class Player_Inventory : MonoBehaviour
 	public AudioClip eatFoodSound;
 	public AudioClip pickUpSound;
 
+	public int numFree;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -180,7 +182,15 @@ public class Player_Inventory : MonoBehaviour
 			if(i == "Grid Weapon") WeaponGrid.GetComponent<Image>().sprite = items[i];
 			if(i == "Grid Ammo") AmmoGrid.GetComponent<Image>().sprite = items[i];
 			if(i == "Grid Trash") GridTrash.GetComponent<Image>().sprite = items[i];
-		}	
+		}
+
+		// Check number of free grids
+		numFree = 0;
+
+		foreach (string i in grids)
+		{
+			if((i.StartsWith("Grid 1") ||  i.StartsWith("Grid 2") ||i.StartsWith("Grid 3") ||i.StartsWith("Grid 4") ||i.StartsWith("Grid 5"))&& items[i].Equals(gridImage)) numFree++;
+		}
 
 		if (Input.GetKeyDown (KeyCode.I))
 		{
@@ -389,6 +399,22 @@ public class Player_Inventory : MonoBehaviour
 			tempObj.name = woodPrefab.name;
 			StartCoroutine("ThrowWood", tempObj);
 			items[selectedName] = gridImage;
+
+
+			isSelected = false;
+			GameObject.Find(selectedName).GetComponent<Image>().color = gridColor;
+			selectedName = "";
+
+			this.gameObject.GetComponent<Player_BasicAttacks>().enabled = true;
+			this.gameObject.GetComponent<Player_BasicMovement>().enabled = true;
+			this.gameObject.GetComponent<Player_BasicRotation>().enabled = true;
+			this.gameObject.GetComponent<Player_Camera_BasicRotation>().enabled = true;
+			
+			Cursor.visible = false;
+
+			InventoryUI.SetActive(false);
+
+			return;
 		}
 
 		if (items [selectedName].Equals (pistolSprite) || items [selectedName].Equals (batSprite))
@@ -430,11 +456,11 @@ public class Player_Inventory : MonoBehaviour
 
 	IEnumerator ThrowWood(GameObject wood)
 	{
-		wood.GetComponent<Rigidbody>().AddForce((this.transform.forward + Vector3.up) * 250f);
-
+		//wood.GetComponent<Rigidbody>().AddForce((this.transform.forward + Vector3.up) * 350f);
+		//wood.GetComponent<Rigidbody> ().AddTorque (new Vector3(110, -50, 250));
+		wood.GetComponent<Rigidbody> ().AddExplosionForce (1000, this.transform.position + Vector3.down/2, 10);
 		yield return new WaitForSeconds (2.0f);
-
-		this.GetComponent<Player_Noise>().GenerateNoiseAtPosWithDistance(wood.transform.position, 10f);
+		this.GetComponent<Player_Noise>().GenerateNoiseAtPosWithDistance(wood.transform.position, 15f);
 	}
 	/*
 	void OnGUI () {
