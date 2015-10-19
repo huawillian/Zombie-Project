@@ -37,7 +37,7 @@ public class Bullet_Controller : MonoBehaviour
 	{
 		if (collider.name == "zombie") {	
 			AudioSource.PlayClipAtPoint(shotZombieSound, this.transform.position);
-			collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(25);
+			collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(50);
 			Destroy(this.gameObject);
 		}
 	}

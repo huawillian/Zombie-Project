@@ -105,19 +105,19 @@ public class Player_BasicMovement : MonoBehaviour
 			// WASD controller
 			if (Input.GetKey (KeyCode.W)) {
 				if (isSprinting) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 10f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 12f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
 				} else
 			if (isCrouching) {
 					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
 				} else
 			if (isJumping) {
 				} else {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 6f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
 				}
 			}
 			if (Input.GetKey (KeyCode.A)) {
 				if (isSprinting) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.right * -10f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+					player.GetComponent<Rigidbody> ().velocity = player.transform.right * -7f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
 				} else
 				if (isCrouching) {
 					player.GetComponent<Rigidbody> ().velocity = player.transform.right * -2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
@@ -129,19 +129,19 @@ public class Player_BasicMovement : MonoBehaviour
 			}
 			if (Input.GetKey (KeyCode.S)) {
 				if (isSprinting) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -10f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
 				} else
 				if (isCrouching) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -1f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
 				} else
 				if (isJumping) {
 				} else {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -2.5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
 				}
 			}
 			if (Input.GetKey (KeyCode.D)) {
 				if (isSprinting) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.right * 10f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
+					player.GetComponent<Rigidbody> ().velocity = player.transform.right * 7f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
 				} else
 				if (isCrouching) {
 					player.GetComponent<Rigidbody> ().velocity = player.transform.right * 2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);

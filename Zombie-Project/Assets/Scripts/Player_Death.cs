@@ -75,6 +75,10 @@ public class Player_Death : MonoBehaviour
 
 	public void RespawnOnClick()
 	{
+		camera1.transform.SetParent (this.transform);
+		camera1.transform.localPosition = new Vector3 (0,1, 0.1f);
+		camera1.transform.localEulerAngles = new Vector3 (0,0,0);
+
 		deathUI.SetActive(false);
 		this.gameObject.GetComponent<Player_Health>().Health = 100;
 		this.gameObject.transform.position = Vector3.zero;
@@ -106,7 +110,11 @@ public class Player_Death : MonoBehaviour
 		this.gameObject.GetComponentInChildren<Pistol_Ammo> ().UseAmmo (this.gameObject.GetComponentInChildren<Pistol_Ammo> ().Ammo);
 
 		this.gameObject.GetComponent<Instruction_Disable> ().ShowInstructions ();
+		this.gameObject.GetComponentInChildren<Person_AnimationController>().SetRespawn();
+
 	}
+
+	public GameObject camera1;
 
 	public void setDeath()
 	{

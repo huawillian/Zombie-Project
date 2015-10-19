@@ -54,6 +54,9 @@ public class Zombie_BasicMovement : MonoBehaviour
 	{
 		while (state == ZombieState.Idle)
 		{
+			if (!agent.enabled)
+				yield break;
+
 			if(isDamaged)
 			{
 				yield return new WaitForSeconds(1.0f);
@@ -74,7 +77,7 @@ public class Zombie_BasicMovement : MonoBehaviour
 				yield return this.StartCoroutine("TurnLeft");
 					break;
 				case 3:
-				yield return this.StartCoroutine("StayStill");
+				//yield return this.StartCoroutine("StayStill");
 					break;
 				default:
 					Debug.Log(this.gameObject.ToString() + " has invalid move.");
@@ -85,9 +88,13 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	IEnumerator StartAttack()
 	{
+		if (!agent.enabled)
+			yield break;
+		;
+
 		Debug.Log ("Start Attack");
 		AudioSource.PlayClipAtPoint(attackSound, this.transform.position);
-		this.agent.speed = 3.5f;
+		this.agent.speed = 4.5f;
 
 		while (state == ZombieState.Attack)
 		{
@@ -109,12 +116,14 @@ public class Zombie_BasicMovement : MonoBehaviour
 				this.StartCoroutine("StartPatrol");
 			}
 
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(2.0f);
 		}
 	}
 
 	IEnumerator MoveForward()
 	{
+		if (!agent.enabled)
+			yield break;
 		this.agent.SetDestination (this.transform.position + this.transform.forward * 5);
 
 		yield return new WaitForSeconds (3.0f);
@@ -135,6 +144,8 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	IEnumerator TurnRight()
 	{
+		if (!agent.enabled)
+			yield break;
 		this.agent.SetDestination (this.transform.position + this.transform.right * 5);
 		
 		yield return new WaitForSeconds (3.0f);
@@ -157,6 +168,9 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	IEnumerator TurnLeft()
 	{
+		if (!agent.enabled)
+			yield break;
+		;
 		this.agent.SetDestination (this.transform.position + this.transform.right * -5);
 		
 		yield return new WaitForSeconds (3.0f);
@@ -194,6 +208,8 @@ public class Zombie_BasicMovement : MonoBehaviour
 			this.StopCoroutine("MoveForward");
 			this.StopCoroutine("StartPatrol");
 
+			if (!agent.enabled)
+				return;
 			agent.SetDestination(this.transform.position);
 
 			this.StartCoroutine("StartAttack");
@@ -225,7 +241,7 @@ public class Zombie_BasicMovement : MonoBehaviour
 			zombie.transform.LookAt(pos);
 			zombie.transform.localEulerAngles = new Vector3(0, zombie.transform.localEulerAngles.y ,0);
 			*/
-			agent.speed = 2.5f;
+			agent.speed = 4.5f;
 			agent.SetDestination(pos);
 
 			if(Vector3.Distance(zombie.transform.position, pos) < 2f || isDamaged)

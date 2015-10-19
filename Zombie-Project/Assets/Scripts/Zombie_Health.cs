@@ -17,17 +17,37 @@ public class Zombie_Health : MonoBehaviour
 		}
 		set {
 			if(value > 100) health = 100;
-			else if(value <= 0)
+			else if(value <= 0 && health != 0)
 			{
-				AudioSource.PlayClipAtPoint(deathSound, this.transform.position);
 				health= 0;
-				GameObject tmp = Instantiate(corpsePrefab,this.gameObject.transform.position, Quaternion.identity) as GameObject;
-				tmp.name = corpsePrefab.name;
-				Destroy(this.gameObject);
+				AudioSource.PlayClipAtPoint(deathSound, this.transform.position);
+
+				this.GetComponentInChildren<Zombie_AnimatorController>().StartCoroutine("setDeath");
+				this.GetComponent<NavMeshAgent>().enabled = false;
+				this.GetComponent<Zombie_BasicMovement>().StopAllCoroutines();
+
+				CapsuleCollider[] cols = this.GetComponentsInChildren<CapsuleCollider>();
+
+				foreach(CapsuleCollider col in cols)
+				{
+					if(col.gameObject.activeInHierarchy)
+						col.gameObject.SetActive(false);
+				}
+
+				this.GetComponent<Rigidbody>().isKinematic = true;
+				this.transform.localPosition += Vector3.down;
+
+				this.gameObject.name = "Corpse";
+				gameObject.AddComponent<Search_Content>();
+				gameObject.AddComponent<BoxCollider>().isTrigger = true;
+				this.gameObject.tag = "Search";
+
+				//Destroy(this.gameObject);
 			}
 			else 
 			{
 				AudioSource.PlayClipAtPoint(damageSound, this.transform.position);
+				this.GetComponentInChildren<Zombie_AnimatorController>().StartCoroutine("setHurt");
 				health = value;
 			}
 		}

@@ -90,7 +90,7 @@ public class Player_Stamina : MonoBehaviour
 
 		while (Stamina < 100)
 		{
-			Stamina += 0.1f;
+			Stamina += 0.25f;
 			yield return new WaitForSeconds(0.01f);
 		}
 

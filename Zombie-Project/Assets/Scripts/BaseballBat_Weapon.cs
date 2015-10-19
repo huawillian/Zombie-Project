@@ -99,7 +99,7 @@ public class BaseballBat_Weapon : MonoBehaviour
 			if (isAttacking) {	
 				AudioSource.PlayClipAtPoint (hitSound, this.transform.position);
 				this.GetComponentInParent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (8f);
-				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (50);
+				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (100);
 			}
 		} else
 		if (collider.name == "Box")

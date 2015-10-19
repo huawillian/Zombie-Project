@@ -18,9 +18,12 @@ public class Zombie_Attack : MonoBehaviour
 	{
 		if (collider.name == "Renderer and Collider" && collider.transform.parent.name == "Player")
 		{	
-			collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-			collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 500f);
-			collider.gameObject.transform.parent.gameObject.GetComponent<Player_Health>().damagePlayer(5);
+			if(!this.gameObject.transform.parent.gameObject.GetComponentInChildren<Zombie_AnimatorController>().isAttacking && !this.gameObject.transform.parent.gameObject.GetComponent<Zombie_BasicMovement>().isDamaged)
+			{
+				collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+				collider.gameObject.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 1000f);
+				collider.gameObject.transform.parent.gameObject.GetComponent<Player_Health>().damagePlayer(5);
+			}
 		}
 	}
 }

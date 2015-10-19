@@ -6,6 +6,8 @@ public class Player_Health : MonoBehaviour
 {
 	public GameObject healthUI;
 	public Player_Hunger hungerScript;
+	public AudioClip deathSound;
+	public AudioClip gruntSound;
 
 	[SerializeField]
 	private int health = 100;
@@ -21,26 +23,34 @@ public class Player_Health : MonoBehaviour
 			}
 			else if(value <= 0)
 			{
-				health= 0;
+				if(health != 0)
+				{
+					health = 0;
 
-				this.gameObject.GetComponent<Player_Death>().setDeath();
+					camera1.transform.SetParent(head1.transform);
 
-				this.gameObject.GetComponent<Player_BasicAttacks>().enabled = false;
-				this.gameObject.GetComponent<Player_BasicMovement>().enabled = false;
-				this.gameObject.GetComponent<Player_BasicRotation>().enabled = false;
-				this.gameObject.GetComponent<Player_Camera_BasicRotation>().enabled = false;
+					this.gameObject.GetComponent<Player_Death>().setDeath();
 
-				this.gameObject.transform.localEulerAngles = new Vector3(0,0,-90);
-				this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+					this.gameObject.GetComponent<Player_BasicAttacks>().enabled = false;
+					this.gameObject.GetComponent<Player_BasicMovement>().enabled = false;
+					this.gameObject.GetComponent<Player_BasicRotation>().enabled = false;
+					this.gameObject.GetComponent<Player_Camera_BasicRotation>().enabled = false;
 
-				this.gameObject.GetComponent<Player_Timer>().StopTimer();
+					this.gameObject.transform.localEulerAngles = new Vector3(0,0,-90);
+					this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
 
-				this.gameObject.GetComponent<Player_Stamina>().enabled = false;
-				this.gameObject.GetComponent<Player_ActionUI>().enabled = false;
-				this.gameObject.GetComponent<Player_Search>().enabled = false;
-				this.gameObject.GetComponent<Inventory_PickUp>().enabled = false;
-				this.gameObject.GetComponent<Player_Hunger>().enabled = false;
-				this.gameObject.GetComponent<Player_Inventory>().enabled = false;
+					this.gameObject.GetComponent<Player_Timer>().StopTimer();
+
+					this.gameObject.GetComponent<Player_Stamina>().enabled = false;
+					this.gameObject.GetComponent<Player_ActionUI>().enabled = false;
+					this.gameObject.GetComponent<Player_Search>().enabled = false;
+					this.gameObject.GetComponent<Inventory_PickUp>().enabled = false;
+					this.gameObject.GetComponent<Player_Hunger>().enabled = false;
+					this.gameObject.GetComponent<Player_Inventory>().enabled = false;
+
+					this.gameObject.GetComponentInChildren<Person_AnimationController>().SetDeath();
+					AudioSource.PlayClipAtPoint (deathSound, this.gameObject.transform.position);
+				}
 			}
 			else 
 			{
@@ -50,6 +60,9 @@ public class Player_Health : MonoBehaviour
 			healthUI.GetComponent<Slider>().value = health;
 		}
 	}
+
+	public GameObject head1;
+	public GameObject camera1;
 
 	void Start()
 	{
@@ -86,6 +99,8 @@ public class Player_Health : MonoBehaviour
 	public void damagePlayer(int damage)
 	{
 		Health -= damage;
+		if(Health > 0)
+			AudioSource.PlayClipAtPoint (gruntSound, this.gameObject.transform.position);
 	}
 
 	public void healPlayer(int amount)

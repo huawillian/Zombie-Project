@@ -62,6 +62,7 @@ public class Inventory_PickUp : MonoBehaviour
 			{
 				if(closestItem != null && inventoryScript.numFree > 0)
 				{
+					this.GetComponentInChildren<Person_AnimationController>().StartCoroutine("SetPickUp");
 					AudioSource.PlayClipAtPoint(pickupSound, this.transform.position);
 					inventoryScript.PickUpItem(closestItem.name);
 					itemsInRange.Remove(closestItem);

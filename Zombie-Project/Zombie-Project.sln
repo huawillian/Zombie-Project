@@ -7,6 +7,8 @@ Project("{A0E47526-5A21-3881-0A50-C12CF31AD353}") = "Zombie-Project", "Assembly-
 EndProject
 Project("{A0E47526-5A21-3881-0A50-C12CF31AD353}") = "Zombie-Project", "Assembly-UnityScript-firstpass.unityproj", "{EEE38416-2EB9-724A-E823-3C5BA4AC9E10}"
 EndProject
+Project("{A0E47526-5A21-3881-0A50-C12CF31AD353}") = "Zombie-Project", "Assembly-UnityScript.unityproj", "{D4F88ECF-B130-A645-1C15-91AB80A15530}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,11 +27,15 @@ Global
 		{EEE38416-2EB9-724A-E823-3C5BA4AC9E10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEE38416-2EB9-724A-E823-3C5BA4AC9E10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEE38416-2EB9-724A-E823-3C5BA4AC9E10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4F88ECF-B130-A645-1C15-91AB80A15530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4F88ECF-B130-A645-1C15-91AB80A15530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4F88ECF-B130-A645-1C15-91AB80A15530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4F88ECF-B130-A645-1C15-91AB80A15530}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-																																																																																																																																																																																																																																																																GlobalSection(MonoDevelopProperties) = preSolution
+																																																																																																																																																																																																																																																																																																																																		GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1

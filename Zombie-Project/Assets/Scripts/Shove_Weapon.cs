@@ -108,20 +108,20 @@ public class Shove_Weapon : MonoBehaviour
 
 	IEnumerator ShoveZombie(GameObject zombie)
 	{
-		zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(0);
+		zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(5);
 		zombie.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 500f);
 
 		yield return new WaitForSeconds (0.8f);
 		if (zombie)
 		{
-			zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(0);
+			zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(5);
 			zombie.transform.parent.gameObject.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		}
 
 		yield return new WaitForSeconds (0.8f);
 		if (zombie)
 		{
-			zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(0);
+			zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(5);
 			zombie.transform.parent.gameObject.GetComponent<Rigidbody> ().velocity = Vector3.zero;
 		}
 	}
