@@ -42,9 +42,4 @@ public class Player_Hunger : MonoBehaviour
 	{
 		Hunger += amount;
 	}
-
-	// Update is called once per frame
-	void Update ()
-	{
-	}
 }

@@ -5,11 +5,7 @@ using UnityEngine.UI;
 
 public class Player_Search : MonoBehaviour
 {
-	Inventory_PickUp pickupScript;
-
-	public LinkedList<GameObject> searchInRange;
-	GameObject closestSearch;
-
+	public Inventory_PickUp pickupScript;
 	public GameObject actionUI;
 
 	public GameObject baseballBatPrefab;
@@ -19,8 +15,11 @@ public class Player_Search : MonoBehaviour
 	public GameObject woodPrefab;
 	public GameObject medkitPrefab;
 
-	public float timeDown;
-	public bool isCurrentlySearching;
+	public LinkedList<GameObject> searchInRange;
+	GameObject closestSearch;
+
+	private float timeDown;
+	private bool isCurrentlySearching;
 
 	// Use this for initialization
 	void Start ()
@@ -28,7 +27,6 @@ public class Player_Search : MonoBehaviour
 		pickupScript = this.gameObject.GetComponent<Inventory_PickUp> ();
 		searchInRange = new LinkedList<GameObject> ();
 		closestSearch = null;
-
 		timeDown = Time.time;
 		isCurrentlySearching = false;
 	}
@@ -39,7 +37,6 @@ public class Player_Search : MonoBehaviour
 		if (searchInRange.Count > 0)
 		{
 			float range = 999f;
-			
 			closestSearch = null;
 			
 			foreach (GameObject obj in searchInRange)
@@ -60,18 +57,12 @@ public class Player_Search : MonoBehaviour
 
 			if(closestSearch != null && !isCurrentlySearching)
 			{
-				//actionUI.SetActive (true);
 				actionUI.GetComponent<Text>().text = "Press 'E' to Search " + closestSearch.name;
 			}
 			else 
 			if(closestSearch != null && isCurrentlySearching)
 			{
-				//actionUI.SetActive (true);
 				actionUI.GetComponent<Text>().text = "Currently Searching... (" + (timeDown + 3 - Time.time) + ")";
-			}
-			else
-			{
-				//actionUI.SetActive (false);
 			}
 
 			if(Input.GetKeyDown(KeyCode.E))
@@ -124,23 +115,10 @@ public class Player_Search : MonoBehaviour
 					}
 				}
 			}
-
-			/*
-			if(Input.GetKeyDown(KeyCode.E))
-			{
-				if(closestSearch != null)
-				{
-					closestSearch.GetComponent<Search_Content>().setSearched();
-					instantiateItems( closestSearch.GetComponent<Search_Content>().getContent(), closestSearch.transform.position + closestSearch.transform.forward);
-					closestSearch = null;
-				}
-			}*/
-
 		} 
 		else
 		{
 			pickupScript.enableScript();
-			//actionUI.SetActive (false);
 			closestSearch = null;
 		}
 

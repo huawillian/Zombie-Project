@@ -90,7 +90,6 @@ public class Zombie_BasicMovement : MonoBehaviour
 	{
 		if (!agent.enabled)
 			yield break;
-		;
 
 		Debug.Log ("Start Attack");
 		AudioSource.PlayClipAtPoint(attackSound, this.transform.position);
@@ -98,10 +97,8 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 		while (state == ZombieState.Attack)
 		{
-			//zombieRigidbody.velocity = zombie.transform.forward;
-			//zombie.transform.LookAt(player.transform);
-			//zombie.transform.localEulerAngles = new Vector3(0, zombie.transform.localEulerAngles.y ,0);
-
+			if (!agent.enabled)
+				yield break;
 
 			if(isDamaged)
 				agent.SetDestination(this.transform.position);

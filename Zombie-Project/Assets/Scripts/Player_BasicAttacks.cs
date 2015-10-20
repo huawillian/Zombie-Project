@@ -4,9 +4,8 @@ using UnityEngine.UI;
 
 public class Player_BasicAttacks : MonoBehaviour
 {
-	public bool isBatEquipped;
-	public bool isPistolEquipped;
-	public bool isShoveEquipped;
+	private enum WeaponEquipped{None, Bat, Pistol};
+	private WeaponEquipped equip;
 
 	public GameObject baseballbatWeapon;
 	public GameObject pistolWeapon;
@@ -20,65 +19,54 @@ public class Player_BasicAttacks : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		baseballbatWeapon = GameObject.Find ("Baseball Bat Weapon");
-		pistolWeapon = GameObject.Find ("Pistol Weapon");
-		shoveWeapon = GameObject.Find ("Shove Weapon");
+		baseballbatWeapon = this.GetComponentInChildren<BaseballBat_Weapon> ().gameObject;
+		pistolWeapon = this.GetComponentInChildren<Pistol_Weapon> ().gameObject;
+		shoveWeapon = this.GetComponentInChildren<Shove_Weapon> ().gameObject;
+		equip = WeaponEquipped.None;
 		Unequip ();
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
+		LeftClick ();
+		RightClick ();
+	}
+
+	private void LeftClick()
+	{
 		if (Input.GetMouseButtonDown(0))
 		{
-			Debug.Log("Primary Attack.");
-
-			if(isBatEquipped)
+			switch(equip)
 			{
-				baseballbatWeapon.GetComponent<BaseballBat_Weapon>().StartCoroutine("Attack");
-			}
-
-			if(isPistolEquipped)
-			{
-				pistolWeapon.GetComponent<Pistol_Weapon>().StartCoroutine("Attack");
+				case WeaponEquipped.Bat:
+					baseballbatWeapon.GetComponent<BaseballBat_Weapon>().StartCoroutine("Attack");
+					break;
+				case WeaponEquipped.Pistol:
+					pistolWeapon.GetComponent<Pistol_Weapon>().StartCoroutine("Attack");
+					break;
+				case WeaponEquipped.None:
+					shoveWeapon.GetComponent<Shove_Weapon>().StartCoroutine("Attack");
+					break;
+				default:
+					break;
 			}
 		}
+	}
 
+	private void RightClick()
+	{
 		if (Input.GetMouseButtonDown (1)) {
-			Debug.Log("Right Click");
 			shoveWeapon.GetComponent<Shove_Weapon>().StartCoroutine("Attack");
 		}
-
-		/*
-		if (Input.GetKeyDown (KeyCode.Q)) {
-			if(isPistolEquipped)
-			{
-				isPistolEquipped = false;
-				pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = false;
-				isBatEquipped = true;
-				baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = true;
-			}
-			else
-			{
-				isBatEquipped = false;
-				baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = false;
-				isPistolEquipped = true;
-				pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = true;
-			}
-		}*/
-
 	}
 
 	public void EquipPistol()
 	{
-		if(!isPistolEquipped)
-			AudioSource.PlayClipAtPoint (pistolEquipSound, this.transform.position);
+		equip = WeaponEquipped.Pistol;
 
-		isBatEquipped = false;
 		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = false;
-		isPistolEquipped = true;
 		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = true;
-
 		batUI.SetActive (false);
 		pistolUI.SetActive (true);
 
@@ -86,21 +74,19 @@ public class Player_BasicAttacks : MonoBehaviour
 
 	public void EquipBat()
 	{
-		isPistolEquipped = false;
-		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = false;
-		isBatEquipped = true;
-		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = true;
+		equip = WeaponEquipped.Bat;
 
+		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = false;
+		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = true;
 		batUI.SetActive (true);
 		pistolUI.SetActive (false);	}
 
 	public void Unequip()
 	{
-		isPistolEquipped = false;
-		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = false;
-		isBatEquipped = false;
-		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = false;
+		equip = WeaponEquipped.None;
 
+		pistolWeapon.GetComponent<Pistol_Weapon>().isEquipped = false;
+		baseballbatWeapon.GetComponent<BaseballBat_Weapon>().isEquipped = false;
 		batUI.SetActive (false);
 		pistolUI.SetActive (false);
 	}

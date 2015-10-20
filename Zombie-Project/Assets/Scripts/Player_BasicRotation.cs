@@ -5,25 +5,23 @@ public class Player_BasicRotation : MonoBehaviour
 {
 	// Player Rotating on the y axis
 	// Depends on mouse input y
-
-	public GameObject player;
-
 	// Use this for initialization
+
+	public float rotateSensitivity;
+
 	void Start ()
 	{
-		if (!player)
-			player = this.gameObject;
-
+		rotateSensitivity = 5.0f;
 		Cursor.visible = false;
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		Vector3 playerRotation = player.transform.localEulerAngles;
+		Vector3 playerRotation = this.transform.localEulerAngles;
 
-		player.transform.localEulerAngles = new Vector3(playerRotation.x, 
-		                                                playerRotation.y + Input.GetAxis("Mouse X") * 5, 
+		this.transform.localEulerAngles = new Vector3(playerRotation.x, 
+		                                              playerRotation.y + Input.GetAxis("Mouse X") * rotateSensitivity, 
 		                                                playerRotation.z);
 	}
 }

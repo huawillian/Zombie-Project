@@ -16,12 +16,9 @@ public class Bullet_Controller : MonoBehaviour
 	{
 		bulletRigidbody = this.GetComponent<Rigidbody>();
 		bulletForward = this.transform.forward;
-
 		bulletDuration = 1f;
 		deathTime = Time.time + bulletDuration;
 		bulletSpeed = 120;
-
-		//this.transform.localEulerAngles = this.transform.parent.localEulerAngles;
 		bulletRigidbody.velocity = this.transform.forward * bulletSpeed;
 	}
 
@@ -29,15 +26,13 @@ public class Bullet_Controller : MonoBehaviour
 	{
 		if (Time.time > deathTime)
 			Destroy (this.gameObject);
-
-
 	}
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.name == "zombie") {	
+		if (collider.name == "Renderer and Collider" && collider.transform.parent.name == "Zombie") {	
 			AudioSource.PlayClipAtPoint(shotZombieSound, this.transform.position);
-			collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(50);
+			collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(30);
 			Destroy(this.gameObject);
 		}
 	}

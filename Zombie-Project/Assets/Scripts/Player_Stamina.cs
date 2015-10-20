@@ -4,8 +4,14 @@ using UnityEngine.UI;
 
 public class Player_Stamina : MonoBehaviour 
 {
-	private float stamina;
+	// Idle, regenerate stamina based off hunger
+	// Lose stamina based off action (only if in Idle state prior), then wait a bit before returning to Idle state
+	// Recover state initiated when stamina first becomes 0, then slowly regenerates back to full, then returns to Idle state
+	private enum StaminaState {Idle, Use, Recover};
+	private StaminaState state;
+	private bool transition;
 
+	private float stamina;
 	public float Stamina
 	{
 		get
@@ -24,17 +30,9 @@ public class Player_Stamina : MonoBehaviour
 		}
 	}
 
-	public bool transition;
+	public Player_Hunger hungerScript;
 	public GameObject staminaUI;
 	public GameObject staminaColorUI;
-
-	// Idle, regenerate stamina based off hunger
-	// Lose stamina based off action (only if in Idle state prior), then wait a bit before returning to Idle state
-	// Recover state initiated when stamina first becomes 0, then slowly regenerates back to full, then returns to Idle state
-	public enum StaminaState {Idle, Use, Recover};
-	public StaminaState state;
-
-	Player_Hunger hungerScript;
 
 	// Use this for initialization
 	void Start ()
@@ -135,5 +133,13 @@ public class Player_Stamina : MonoBehaviour
 			staminaColorUI.GetComponent<Image> ().color = new Color(200,200,0);
 
 		}
+	}
+
+	public bool getRecoverStatus()
+	{
+		if (state == StaminaState.Recover)
+			return 	true;
+		else
+			return false;
 	}
 }

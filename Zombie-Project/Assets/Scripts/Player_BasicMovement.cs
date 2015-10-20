@@ -3,216 +3,236 @@ using System.Collections;
 
 public class Player_BasicMovement : MonoBehaviour
 {
-	// Shift for sprinting
-	// Ctrl for crouching
-	// Space for jumping
-	// Alt for tilting
-	// WASD for basic movement
-	public GameObject player;
-	public float defaultSpeed;
+	
+	#pragma warning disable 0108
+	// Rigidbody on Player
+	private Rigidbody rigidbody;
+
+	// Movement states
+	private enum MovementState {Walking, Sprinting, Crouching};
+	private MovementState state;
+
+	// Default speed for movement
+	public float walkSpeed;
 	public float sprintSpeed;
 	public float crouchSpeed;
 	public float jumpForce;
 
-	public bool isJumping;
-	public bool isCrouching;
-	public bool isSprinting;
+	// Player flags for jumping
+	private bool isGrounded;
+	private bool isJumpReady;
 
-	public GameObject camera;
-
+	// Player walking and running sound variables
 	public AudioClip walkSound;
 	public AudioClip runSound;
-
 	public AudioSource walkSource;
 	public AudioSource runSource;
 
+	// References to other scripts/objects on the player
 	public Player_Stamina staminaScript;
-
-	public bool isJumpReady;
-	public bool isGrounded;
+	#pragma warning restore 0108
 
 	// Use this for initialization
 	void Start ()
 	{
+		this.rigidbody = this.GetComponent<Rigidbody> ();
+
+		state = MovementState.Walking;
+
+		walkSpeed = 6;
+		sprintSpeed = 10;
+		crouchSpeed = 2;
+		jumpForce = 400;
+
+		isGrounded = true;
+		isJumpReady = true;
+
 		walkSource = this.gameObject.AddComponent<AudioSource>();
 		runSource = this.gameObject.AddComponent<AudioSource>();
 		walkSource.clip = walkSound;
-		walkSource.loop = true;
 		runSource.clip = runSound;
+		walkSource.loop = true;
 		runSource.loop = true;
-
-
-		if (!player)
-			player = this.gameObject;
-
-		if (defaultSpeed == 0)
-			defaultSpeed = 10;
-
-		if (sprintSpeed == 0)
-			sprintSpeed = 30;
-
-		if (crouchSpeed == 0)
-			crouchSpeed = 6;
-
-		if (jumpForce == 0)
-			jumpForce = 400;
-
-
-		if(!this.camera)
-			this.camera = this.gameObject.GetComponentInChildren<Camera> ().gameObject;
 
 		staminaScript = this.GetComponent <Player_Stamina>();
 		StartCoroutine ("SprintStamina");
-
-		isJumpReady = true;
-		isGrounded = true;
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		// Play Walking and Running Sound when grounded and moving
-		if (isGrounded) {
-			if ((Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.D)) && !isSprinting) {
+		PlayMovementSounds ();
+		MoveWASD ();
+		SetMovementState ();
+		MoveJump ();
+		SetGrounded ();
+		MoveCrouch ();
+	}
 
-				if (!walkSource.isPlaying)
-					walkSource.Play ();
-			} else {
-				if (walkSource.isPlaying) 
-					walkSource.Stop ();
-			}
-
-			if (isSprinting) {
-				if (walkSource.isPlaying)
-					walkSource.Stop ();
-
-				if (Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.D)) {
-					if (!runSource.isPlaying)
-						runSource.Play ();
-				} else {
-					if (runSource.isPlaying) 
-						runSource.Stop ();
-				}
-			} else {
-				if (runSource.isPlaying) 
-					runSource.Stop ();
-			}
-		}
-
-		// Basic Movement for the player when WASD is pressed
-		// Movement speed depends on Player state, crouching, sprinting, jumping, walking
-		if (isGrounded) {
-			// WASD controller
-			if (Input.GetKey (KeyCode.W)) {
-				if (isSprinting) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 12f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				} else
-			if (isCrouching) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				} else
-			if (isJumping) {
-				} else {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * 6f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				}
-			}
-			if (Input.GetKey (KeyCode.A)) {
-				if (isSprinting) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.right * -7f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				} else
-				if (isCrouching) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.right * -2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				} else
-				if (isJumping) {
-				} else {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.right * -5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				}
-			}
-			if (Input.GetKey (KeyCode.S)) {
-				if (isSprinting) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				} else
-				if (isCrouching) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -1f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				} else
-				if (isJumping) {
-				} else {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.forward * -2.5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				}
-			}
-			if (Input.GetKey (KeyCode.D)) {
-				if (isSprinting) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.right * 7f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				} else
-				if (isCrouching) {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.right * 2f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				} else
-				if (isJumping) {
-				} else {
-					player.GetComponent<Rigidbody> ().velocity = player.transform.right * 5f + new Vector3(0, player.GetComponent<Rigidbody>().velocity.y, 0);
-				}
-			}
-		}
-
-		// Shift
-		if (Input.GetKey (KeyCode.LeftShift))
-		{
-			if (!isCrouching && !isJumping && staminaScript.state != Player_Stamina.StaminaState.Recover)
-				isSprinting = true;
-			else 
-				isSprinting = false;
+	// Crouching sets player height to lower value
+	private void MoveCrouch()
+	{
+		if (state == MovementState.Crouching) {
+			this.transform.localScale = new Vector3(1, 0.5f, 1);
 		} else {
-			isSprinting = false;
-		}
-
-		// Ctrl
-		if (Input.GetKey (KeyCode.LeftControl)) 
-		{
-			if(!isSprinting && !isJumping)
-				isCrouching = true;
-		} else {
-			isCrouching = false;
-		}
-
-		// Crouching sets player height to lower value
-		if (isCrouching) {
-			player.transform.localScale = new Vector3(1, 0.5f, 1);
-		} else {
-			player.transform.localScale = new Vector3(1, 1, 1);
-		}
-
-		// Space
-		if (Input.GetKeyDown (KeyCode.Space))
-		{
-			if(staminaScript.state != Player_Stamina.StaminaState.Recover && isJumpReady && isGrounded && !isCrouching)
-			{
-				isJumpReady = false;
-				isJumping = true;
-
-				// Set isJumpReady to true after 1 second
-				StartCoroutine("ResetJump");
-				staminaScript.UseStamina(10.0f);
-				player.GetComponent<Rigidbody> ().AddForce(player.transform.up * jumpForce);
-			}
-		}
-
-		// Set is Grounded
-		if (Physics.Raycast (transform.position, Vector3.down, 2.5f)) {
-			isGrounded = true;
-			isJumping = false;
+			this.transform.localScale = new Vector3(1, 1, 1);
 		}
 	}
 
+	// Set is Grounded
+	private void SetGrounded()
+	{
+		if (Physics.Raycast (transform.position, Vector3.down, 2.5f)) {
+			isGrounded = true;
+		}
+	}
+
+	// Space
+	private void MoveJump()
+	{
+		if (Input.GetKeyDown (KeyCode.Space))
+		{
+			if(!staminaScript.getRecoverStatus() && isJumpReady && isGrounded)
+			{
+				isJumpReady = false;
+				// Set isJumpReady to true after 0.5f second
+				StartCoroutine("ResetJump");
+				staminaScript.UseStamina(10.0f);
+				this.rigidbody.AddForce(this.transform.up * jumpForce);
+			}
+		}
+	}
+
+	// Play Walking and Running Sound when grounded and moving
+	private void PlayMovementSounds()
+	{
+		if (!isGrounded || !(Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.D))) {
+			walkSource.Stop();
+			runSource.Stop();
+			return;
+		}
+
+		if (state == MovementState.Walking || state == MovementState.Crouching) {
+			runSource.Stop();
+			if(!walkSource.isPlaying) walkSource.Play();
+		}
+
+		if (state == MovementState.Sprinting) {
+			walkSource.Stop();
+			if(!runSource.isPlaying) runSource.Play();
+		}
+	}
+
+	// Basic Movement for the player when WASD is pressed
+	// Movement speed depends on Player state, crouching, sprinting, jumping, walking
+	private void MoveWASD()
+	{
+		if (!isGrounded)
+			return;
+
+		// WASD controller
+		if (Input.GetKey (KeyCode.W)) {
+			switch (state)
+			{
+			case MovementState.Sprinting:
+				this.rigidbody.velocity = this.transform.forward * sprintSpeed + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			case MovementState.Crouching:
+				this.rigidbody.velocity = this.transform.forward * crouchSpeed + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			case MovementState.Walking:
+				this.rigidbody.velocity = this.transform.forward * walkSpeed + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			default:
+				break;
+			}
+		}
+		if (Input.GetKey (KeyCode.A)) {
+			switch (state)
+			{
+			case MovementState.Sprinting:
+				this.rigidbody.velocity = this.transform.right * sprintSpeed * -1.0f + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			case MovementState.Crouching:
+				this.rigidbody.velocity = this.transform.right * crouchSpeed  * -1.0f + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			case MovementState.Walking:
+				this.rigidbody.velocity = this.transform.right * walkSpeed * -1.0f + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			default:
+				break;
+			}
+		}
+		if (Input.GetKey (KeyCode.S)) {
+			switch (state)
+			{
+			case MovementState.Sprinting:
+				this.rigidbody.velocity = this.transform.forward * sprintSpeed * -1.0f + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			case MovementState.Crouching:
+				this.rigidbody.velocity = this.transform.forward * crouchSpeed * -1.0f + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			case MovementState.Walking:
+				this.rigidbody.velocity = this.transform.forward * walkSpeed * -1.0f + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			default:
+				break;
+			}
+		}
+		if (Input.GetKey (KeyCode.D)) {
+			switch (state)
+			{
+			case MovementState.Sprinting:
+				this.rigidbody.velocity = this.transform.right * sprintSpeed + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			case MovementState.Crouching:
+				this.rigidbody.velocity = this.transform.right * crouchSpeed + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			case MovementState.Walking:
+				this.rigidbody.velocity = this.transform.right * walkSpeed + new Vector3(0, this.rigidbody.velocity.y, 0);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	private void SetMovementState()
+	{
+		// Shift
+		if (Input.GetKey (KeyCode.LeftShift) && !Input.GetKey (KeyCode.LeftControl) && !staminaScript.getRecoverStatus()) {
+			state = MovementState.Sprinting;
+		}
+		
+		// Ctrl
+		if (Input.GetKey (KeyCode.LeftControl) && !Input.GetKey (KeyCode.LeftShift)) {
+			state = MovementState.Crouching;
+		}
+		
+		// Shift and Ctrl
+		if(Input.GetKey (KeyCode.LeftControl) && Input.GetKey (KeyCode.LeftShift)) {
+			state = MovementState.Crouching;
+		}
+		
+		// Not Shift or Ctrl
+		if (!Input.GetKey (KeyCode.LeftControl) && !Input.GetKey (KeyCode.LeftShift)) {
+			state = MovementState.Walking;
+		}
+	}
+	
+	// Set Jump Ready as 0.5f second cooldown
 	IEnumerator ResetJump()
 	{
-		yield return new WaitForSeconds (1.0f);
+		yield return new WaitForSeconds (0.5f);
 		isJumpReady = true;
 	}
 
+	// Use stamina when sprinting by calling function in stamina script
 	IEnumerator SprintStamina()
 	{
 		while (true) {
 			yield return new WaitForSeconds(0.1f);
-			if(isSprinting)
+			if(state == MovementState.Sprinting)
 			{
 				staminaScript.UseStamina(2.0f);
 			}

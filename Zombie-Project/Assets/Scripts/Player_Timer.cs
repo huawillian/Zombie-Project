@@ -4,12 +4,11 @@ using UnityEngine.UI;
 
 public class Player_Timer : MonoBehaviour
 {
-	public float timeAlive;
-	public GameObject timerUI;
-
-	public bool timerActive;
-
+	private float timeAlive;
+	private bool timerActive;
 	private float timeStart;
+
+	public GameObject timerUI;
 
 	// Use this for initialization
 	void Start ()
@@ -45,6 +44,11 @@ public class Player_Timer : MonoBehaviour
 	public void StopTimer()
 	{
 		timerActive = false;
+	}
+
+	public float getTimeAlive()
+	{
+		return timeAlive;
 	}
 
 }

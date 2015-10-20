@@ -55,7 +55,7 @@ public class Shove_Weapon : MonoBehaviour
 
 	IEnumerator Attack()
 	{
-		if (!isShoving && staminaScript.state != Player_Stamina.StaminaState.Recover)
+		if (!isShoving && !staminaScript.getRecoverStatus())
 		{
 			staminaScript.UseStamina(10.0f);
 
@@ -85,7 +85,7 @@ public class Shove_Weapon : MonoBehaviour
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.name == "zombie") {
+		if (collider.name == "Renderer and Collider" && collider.transform.parent.name == "Zombie") {
 			if(isShoving)
 			{	
 				AudioSource.PlayClipAtPoint(hitSound, this.transform.position);
@@ -108,22 +108,11 @@ public class Shove_Weapon : MonoBehaviour
 
 	IEnumerator ShoveZombie(GameObject zombie)
 	{
-		zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(5);
+		if(!zombie.GetComponentInParent<Zombie_BasicMovement>().isDamaged)
+			zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(20);
+
 		zombie.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 500f);
-
 		yield return new WaitForSeconds (0.8f);
-		if (zombie)
-		{
-			zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(5);
-			zombie.transform.parent.gameObject.GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		}
-
-		yield return new WaitForSeconds (0.8f);
-		if (zombie)
-		{
-			zombie.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(5);
-			zombie.transform.parent.gameObject.GetComponent<Rigidbody> ().velocity = Vector3.zero;
-		}
 	}
 
 }

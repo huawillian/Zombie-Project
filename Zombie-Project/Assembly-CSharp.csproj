@@ -49,15 +49,13 @@
      <Compile Include="Assets\Animatii\Locomotion Setup\Scripts\JoystickToEvents.cs" />
      <Compile Include="Assets\Animatii\Locomotion Setup\Scripts\LocomotionPlayer.cs" />
      <Compile Include="Assets\Animatii\Zombie_0_3\Script\PlayGUI.cs" />
-     <Compile Include="Assets\Campfire\Script\FireLightScript.cs" />
-     <Compile Include="Assets\Fantasy Skybox FREE\Scripts\FSPlayer.cs" />
-     <Compile Include="Assets\Person_AnimationController.cs" />
+     <Compile Include="Assets\Campfire Models\Script\FireLightScript.cs" />
      <Compile Include="Assets\Scripts\BaseballBat_Weapon.cs" />
      <Compile Include="Assets\Scripts\Box_Controller.cs" />
      <Compile Include="Assets\Scripts\Bullet_Controller.cs" />
-     <Compile Include="Assets\Scripts\Camera_FirstPersonView.cs" />
      <Compile Include="Assets\Scripts\Instruction_Disable.cs" />
      <Compile Include="Assets\Scripts\Inventory_PickUp.cs" />
+     <Compile Include="Assets\Scripts\Person_AnimationController.cs" />
      <Compile Include="Assets\Scripts\Pistol_Ammo.cs" />
      <Compile Include="Assets\Scripts\Pistol_Weapon.cs" />
      <Compile Include="Assets\Scripts\Player_ActionUI.cs" />
@@ -76,18 +74,25 @@
      <Compile Include="Assets\Scripts\Player_Timer.cs" />
      <Compile Include="Assets\Scripts\Search_Content.cs" />
      <Compile Include="Assets\Scripts\Shove_Weapon.cs" />
+     <Compile Include="Assets\Scripts\Zombie_AnimatorController.cs" />
      <Compile Include="Assets\Scripts\Zombie_Attack.cs" />
      <Compile Include="Assets\Scripts\Zombie_BasicMovement.cs" />
      <Compile Include="Assets\Scripts\Zombie_Health.cs" />
      <Compile Include="Assets\Scripts\Zombie_Spawner.cs" />
-     <Compile Include="Assets\Zombie_AnimatorController.cs" />
+     <Compile Include="Assets\Skybox\Scripts\FSPlayer.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Animatii\Zombie_0_3\AnimationFrameTable\Zombie_0_3.txt" />
+ <Reference Include="UnityEngine.Advertisements">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Networking">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.Analytics">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Cecil">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/Mono.Cecil.dll</HintPath>

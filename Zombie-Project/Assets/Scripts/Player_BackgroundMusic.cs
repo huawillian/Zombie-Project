@@ -5,9 +5,9 @@ public class Player_BackgroundMusic : MonoBehaviour {
 
 	public AudioClip otherClip;
 	
-	IEnumerator Start() {
+	IEnumerator Start()
+	{
 		AudioSource audio = this.gameObject.AddComponent<AudioSource>();
-
 		audio.clip = otherClip;
 
 		while (true) {

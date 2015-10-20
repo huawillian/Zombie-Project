@@ -6,14 +6,15 @@ public class Player_Health : MonoBehaviour
 {
 	public GameObject healthUI;
 	public Player_Hunger hungerScript;
-	public AudioClip deathSound;
+	public Player_Death deathScript;
+
 	public AudioClip gruntSound;
 
 	[SerializeField]
 	private int health = 100;
 	
-	public int Health{
-		get{
+	public int Health {
+		get {
 			return health;
 		}
 		set {
@@ -26,30 +27,7 @@ public class Player_Health : MonoBehaviour
 				if(health != 0)
 				{
 					health = 0;
-
-					camera1.transform.SetParent(head1.transform);
-
-					this.gameObject.GetComponent<Player_Death>().setDeath();
-
-					this.gameObject.GetComponent<Player_BasicAttacks>().enabled = false;
-					this.gameObject.GetComponent<Player_BasicMovement>().enabled = false;
-					this.gameObject.GetComponent<Player_BasicRotation>().enabled = false;
-					this.gameObject.GetComponent<Player_Camera_BasicRotation>().enabled = false;
-
-					this.gameObject.transform.localEulerAngles = new Vector3(0,0,-90);
-					this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-
-					this.gameObject.GetComponent<Player_Timer>().StopTimer();
-
-					this.gameObject.GetComponent<Player_Stamina>().enabled = false;
-					this.gameObject.GetComponent<Player_ActionUI>().enabled = false;
-					this.gameObject.GetComponent<Player_Search>().enabled = false;
-					this.gameObject.GetComponent<Inventory_PickUp>().enabled = false;
-					this.gameObject.GetComponent<Player_Hunger>().enabled = false;
-					this.gameObject.GetComponent<Player_Inventory>().enabled = false;
-
-					this.gameObject.GetComponentInChildren<Person_AnimationController>().SetDeath();
-					AudioSource.PlayClipAtPoint (deathSound, this.gameObject.transform.position);
+					deathScript.setDeath();
 				}
 			}
 			else 
@@ -61,12 +39,10 @@ public class Player_Health : MonoBehaviour
 		}
 	}
 
-	public GameObject head1;
-	public GameObject camera1;
-
 	void Start()
 	{
 		hungerScript = this.GetComponent<Player_Hunger> ();
+		deathScript = this.GetComponent<Player_Death> ();
 		StartCoroutine ("StartHealthRegen");
 	}
 
@@ -90,10 +66,6 @@ public class Player_Health : MonoBehaviour
 
 			yield return new WaitForSeconds(10.0f);
 		}
-	}
-
-	void Update()
-	{
 	}
 
 	public void damagePlayer(int damage)

@@ -61,7 +61,7 @@ public class BaseballBat_Weapon : MonoBehaviour
 
 	IEnumerator Attack()
 	{
-		if (!isAttacking && isEquipped && staminaScript.state != Player_Stamina.StaminaState.Recover)
+		if (!isAttacking && isEquipped && !staminaScript.getRecoverStatus())
 		{
 			this.GetComponentInParent<Player_Stamina>().UseStamina(20.0f);
 			AudioSource.PlayClipAtPoint(swingSound, this.transform.position);
@@ -95,11 +95,12 @@ public class BaseballBat_Weapon : MonoBehaviour
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.name == "zombie") {
+		if (collider.name == "Renderer and Collider" && collider.transform.parent.name == "Zombie") {
 			if (isAttacking) {	
 				AudioSource.PlayClipAtPoint (hitSound, this.transform.position);
 				this.GetComponentInParent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (8f);
-				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (100);
+				collider.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 300f);
+				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (45);
 			}
 		} else
 		if (collider.name == "Box")

@@ -151,7 +151,6 @@ public class Player_Inventory : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-
 		foreach(string i in grids)
 		{
 			if(i == "Grid 1 1") Grid11.GetComponent<Image>().sprite = items[i];
@@ -456,20 +455,10 @@ public class Player_Inventory : MonoBehaviour
 
 	IEnumerator ThrowWood(GameObject wood)
 	{
-		//wood.GetComponent<Rigidbody>().AddForce((this.transform.forward + Vector3.up) * 350f);
-		//wood.GetComponent<Rigidbody> ().AddTorque (new Vector3(110, -50, 250));
 		wood.GetComponent<Rigidbody> ().AddExplosionForce (1000, this.transform.position + Vector3.down/2, 10);
 		yield return new WaitForSeconds (2.0f);
 		this.GetComponent<Player_Noise>().GenerateNoiseAtPosWithDistance(wood.transform.position, 15f);
 	}
-	/*
-	void OnGUI () {
-		if(GUI.Button(new Rect(20,40,80,20), "Pickup Medkit"))
-		{	
-			PickUpItem("Medkit");
-			
-		}
-	}*/
 
 	public void DropAllItems()
 	{
