@@ -1,21 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class Player_Death : MonoBehaviour
+public class Player_Death : NetworkBehaviour
 {
-
 	Player_Inventory inventoryScript;
 	public GameObject deathUI;
 	public GameObject deathText;
 	public Player_Timer timerScript;
 
 	public AudioClip deathSound;
+
+	[SyncVar]
 	public bool isDead = false;
 
 	// Use this for initialization
 	void Start ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		inventoryScript = this.GetComponent<Player_Inventory> ();
 		timerScript = this.GetComponent<Player_Timer> ();
 	}
@@ -23,6 +28,9 @@ public class Player_Death : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		if (isDead) {
 			deathUI.SetActive (true);
 			Cursor.visible = true;
@@ -49,6 +57,9 @@ public class Player_Death : MonoBehaviour
 
 	public void RespawnOnClick()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		deathUI.SetActive(false);
 		this.gameObject.GetComponent<Player_Health>().Health = 100;
 		this.gameObject.transform.position = Vector3.zero;
@@ -86,6 +97,9 @@ public class Player_Death : MonoBehaviour
 
 	public void setDeath()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		this.gameObject.GetComponent<Player_BasicAttacks>().enabled = false;
 		this.gameObject.GetComponent<Player_BasicMovement>().enabled = false;
 		this.gameObject.GetComponent<Player_BasicRotation>().enabled = false;

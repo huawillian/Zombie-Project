@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class Player_BasicMovement : MonoBehaviour
+public class Player_BasicMovement : NetworkBehaviour
 {
-	
 	#pragma warning disable 0108
 	// Rigidbody on Player
 	private Rigidbody rigidbody;
@@ -32,9 +32,16 @@ public class Player_BasicMovement : MonoBehaviour
 	public Player_Stamina staminaScript;
 	#pragma warning restore 0108
 
+	[SyncVar, SerializeField]
+	private Vector3 Pos;
+
 	// Use this for initialization
 	void Start ()
 	{
+		if (!isLocalPlayer) {
+			return;
+		}
+
 		this.rigidbody = this.GetComponent<Rigidbody> ();
 
 		state = MovementState.Walking;
@@ -61,14 +68,33 @@ public class Player_BasicMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isLocalPlayer)
+		{
+			this.transform.position = Pos;
+			return;
+		}
+
 		PlayMovementSounds ();
 		MoveWASD ();
 		SetMovementState ();
 		MoveJump ();
 		SetGrounded ();
 		MoveCrouch ();
+
+		if (isClient) {
+			CmdSetPosOnServer (this.transform.position);
+		} else {
+			Pos = this.transform.position;
+		}
 	}
 
+	[Command]
+	void CmdSetPosOnServer(Vector3 posix)
+	{
+		Pos = posix;
+		this.transform.position = Pos;
+	}
+	
 	// Crouching sets player height to lower value
 	private void MoveCrouch()
 	{

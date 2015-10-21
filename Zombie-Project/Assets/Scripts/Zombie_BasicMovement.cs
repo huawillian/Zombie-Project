@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class Zombie_BasicMovement : MonoBehaviour
+public class Zombie_BasicMovement : NetworkBehaviour
 {
 	public enum ZombieState{Idle, Move, Attack};
 	public ZombieState state;
@@ -15,9 +16,15 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	public NavMeshAgent agent;
 
+	[SyncVar]
 	public bool isDamaged;
 	public bool isRecovering;
 
+	[SyncVar]
+	public Vector3 pos;
+	[SyncVar]
+	public Vector3 rot;
+	
 	// Use this for initialization
 	void Start ()
 	{
@@ -27,16 +34,21 @@ public class Zombie_BasicMovement : MonoBehaviour
 		agent = this.GetComponent<NavMeshAgent> ();
 		agent.speed = 1.0f;
 
-		this.StartCoroutine ("StartPatrol");
-		this.StartCoroutine ("PlayIdleSound");
-
-
 		isDamaged = false;
 		isRecovering = false;
+
+		if (!isServer)
+			return;
+		
+		this.StartCoroutine ("StartPatrol");
+		this.StartCoroutine ("PlayIdleSound");
 	}
 
 	IEnumerator PlayIdleSound()
 	{
+		if (!isServer)
+			yield break;
+
 		yield return new WaitForSeconds((float)Random.Range(0,10));
 
 		while(true)
@@ -51,7 +63,10 @@ public class Zombie_BasicMovement : MonoBehaviour
 	}
 
 	IEnumerator StartPatrol()
-	{
+	{		
+		if (!isServer)
+			yield break;
+
 		while (state == ZombieState.Idle)
 		{
 			if (!agent.enabled)
@@ -88,6 +103,10 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	IEnumerator StartAttack()
 	{
+		if (!isServer)
+			yield break;
+
+
 		if (!agent.enabled)
 			yield break;
 
@@ -119,6 +138,10 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	IEnumerator MoveForward()
 	{
+		if (!isServer)
+			yield break;
+
+
 		if (!agent.enabled)
 			yield break;
 		this.agent.SetDestination (this.transform.position + this.transform.forward * 5);
@@ -126,21 +149,13 @@ public class Zombie_BasicMovement : MonoBehaviour
 		yield return new WaitForSeconds (3.0f);
 
 		this.agent.SetDestination (this.transform.position);
-		/*
-		float startTime = Time.time;
-		float endTime = startTime + 2.0f;
-		
-		while (Time.time < endTime || !isDamaged)
-		{
-			zombieRigidbody.velocity = zombie.transform.forward;
-			yield return new WaitForSeconds (0.01f);
-		}
-
-		zombieRigidbody.velocity = Vector3.zero;*/
 	}
 
 	IEnumerator TurnRight()
 	{
+		if (!isServer)
+			yield break;
+
 		if (!agent.enabled)
 			yield break;
 		this.agent.SetDestination (this.transform.position + this.transform.right * 5);
@@ -148,54 +163,37 @@ public class Zombie_BasicMovement : MonoBehaviour
 		yield return new WaitForSeconds (3.0f);
 		
 		this.agent.SetDestination (this.transform.position);
-
-		/*
-		Vector3 startRotation = zombie.transform.localEulerAngles;
-		Vector3 endRotation = startRotation + new Vector3 (0, 90, 0);
-		float startTime = Time.time;
-		float endTime = startTime + 1.0f;
-
-		while (Time.time < endTime || !isDamaged)
-		{
-			zombie.transform.localEulerAngles = Vector3.Lerp(startRotation, endRotation, (Time.time - startTime)/2.0f);
-			yield return new WaitForSeconds (0.01f);
-		}
-		*/
 	}
 
 	IEnumerator TurnLeft()
 	{
+		if (!isServer)
+			yield break;
+
 		if (!agent.enabled)
 			yield break;
-		;
+
 		this.agent.SetDestination (this.transform.position + this.transform.right * -5);
 		
 		yield return new WaitForSeconds (3.0f);
 		
 		this.agent.SetDestination (this.transform.position);
-
-		/*
-		Vector3 startRotation = zombie.transform.localEulerAngles;
-		Vector3 endRotation = startRotation + new Vector3 (0, -90, 0);
-		float startTime = Time.time;
-		float endTime = startTime + 1.0f;
-		
-		while (Time.time < endTime || !isDamaged)
-		{
-			zombie.transform.localEulerAngles = Vector3.Lerp(startRotation, endRotation, (Time.time - startTime)/2.0f);
-			yield return new WaitForSeconds (0.01f);
-
-		}*/
 	}
 
 	IEnumerator StayStill()
 	{
+		if (!isServer)
+			yield break;
+
 		yield return new WaitForSeconds (1.0f);
 	}
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.name.Equals ("Player") && (state == ZombieState.Idle || state == ZombieState.Move)) {
+		if (!isServer)
+			return;
+
+		if (collider.name.Equals ("Player(Clone)") && (state == ZombieState.Idle || state == ZombieState.Move)) {
 			state = ZombieState.Attack;
 			player = collider.gameObject;
 
@@ -215,6 +213,9 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	public void MoveToPos(Vector3 pos)
 	{
+		if (!isServer)
+			return;
+
 		if (state == ZombieState.Move) {
 			this.StopCoroutine("MoveToTarget");
 		}
@@ -231,13 +232,11 @@ public class Zombie_BasicMovement : MonoBehaviour
 
 	public IEnumerator MoveToTarget(Vector3 pos)
 	{
+		if (!isServer)
+			yield break;
+
 		while (state == ZombieState.Move)
 		{
-			/*
-			zombieRigidbody.velocity = zombie.transform.forward;
-			zombie.transform.LookAt(pos);
-			zombie.transform.localEulerAngles = new Vector3(0, zombie.transform.localEulerAngles.y ,0);
-			*/
 			agent.speed = 4.5f;
 			agent.SetDestination(pos);
 
@@ -257,10 +256,20 @@ public class Zombie_BasicMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isServer) {
+			this.gameObject.transform.position = pos;
+			this.gameObject.transform.localEulerAngles = rot;
+		} else {
+			pos = this.transform.position;
+			rot = this.transform.localEulerAngles;
+		}
 	}
 
 	public IEnumerator ResetDamaged()
 	{
+		if (!isServer)
+			yield break;
+
 		isRecovering = true;
 		this.StopCoroutine("MoveToTarget");
 		this.StopCoroutine("TurnLeft");

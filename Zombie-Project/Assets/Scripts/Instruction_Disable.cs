@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class Instruction_Disable : MonoBehaviour
+public class Instruction_Disable : NetworkBehaviour
 {
 	public GameObject instruction;
 	public GameObject inventoryInstruction;
@@ -13,6 +14,9 @@ public class Instruction_Disable : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		instruction.SetActive (false);
 		inventoryInstruction.SetActive (false);
 		instruction1.SetActive (false);
@@ -34,6 +38,9 @@ public class Instruction_Disable : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		if (Input.GetKeyDown (KeyCode.I) && !iFirstTime) {
 			iFirstTime = true;
 			StartCoroutine ("ShowInventoryInstruction", 20);

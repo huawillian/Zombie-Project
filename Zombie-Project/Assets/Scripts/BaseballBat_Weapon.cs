@@ -1,27 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class BaseballBat_Weapon : MonoBehaviour
+public class BaseballBat_Weapon : NetworkBehaviour
 {
+	[SyncVar]
 	public bool isEquipped;
+	[SyncVar]
 	public bool isAttacking;
 
 	public Vector3 originalPosition;
 	public Vector3 originalRotation;
-
-	public Vector3 startPosition;
-	public Vector3 startRotation;
-
-	public Vector3 endPosition;
-	public Vector3 endRotation;
-
-	public float attackDuration;
 	
 	public AudioClip swingSound;
 	public AudioClip hitSound;
 
 	public Player_Stamina staminaScript;
+
+	public GameObject weaponObject;
 
 	// Use this for initialization
 	void Start ()
@@ -29,28 +26,20 @@ public class BaseballBat_Weapon : MonoBehaviour
 		originalPosition = this.transform.localPosition; // -0.3 0.1 0.2 pos 0 0 0 rot
 		originalRotation = this.transform.localEulerAngles; // -0.3 0.1 0.2 pos 0 0 0 rot
 
-		startPosition = new Vector3 (0.3f, 0.5f, 0.8f);
-		startRotation = new Vector3 (-80f, 0, 0);
-
-		endPosition = new Vector3 (-0.3f, 0.5f, 0.8f);
-		endRotation = new Vector3 (40f, -25f, 0);	
-
-		attackDuration = 0.3f;
-
-		staminaScript = this.GetComponentInParent <Player_Stamina>();
+		staminaScript = this.GetComponent <Player_Stamina>();
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
 		if (!isEquipped) {
-			MeshRenderer[] renderers = this.GetComponentsInChildren<MeshRenderer> ();
+			MeshRenderer[] renderers = weaponObject.GetComponentsInChildren<MeshRenderer> ();
 			
 			foreach (MeshRenderer r in renderers) {
 				r.enabled = false;
 			}
 		} else {
-			MeshRenderer[] renderers = this.GetComponentsInChildren<MeshRenderer> ();
+			MeshRenderer[] renderers = weaponObject.GetComponentsInChildren<MeshRenderer> ();
 			
 			foreach (MeshRenderer r in renderers) {
 				r.enabled = true;
@@ -61,30 +50,27 @@ public class BaseballBat_Weapon : MonoBehaviour
 
 	IEnumerator Attack()
 	{
+		if (!isLocalPlayer && !isAttacking && isEquipped && !staminaScript.getRecoverStatus())
+		{
+			weaponObject.GetComponent<Animation>().Play();
+			yield return new WaitForSeconds (weaponObject.GetComponent<Animation>().clip.length);
+			weaponObject.transform.localPosition = originalPosition;
+			weaponObject.transform.localEulerAngles = originalRotation;
+			Debug.Log("Other Swing");
+
+			yield break;
+		}
+
 		if (!isAttacking && isEquipped && !staminaScript.getRecoverStatus())
 		{
-			this.GetComponentInParent<Player_Stamina>().UseStamina(20.0f);
-			AudioSource.PlayClipAtPoint(swingSound, this.transform.position);
-
+			this.GetComponent<Player_Stamina>().UseStamina(20.0f);
+			AudioSource.PlayClipAtPoint(swingSound, weaponObject.transform.position);
 			isAttacking = true;
+			weaponObject.GetComponent<Animation>().Play();
 
-			float startTime = Time.time;
-			float endTime = startTime + attackDuration;
-
-			while (Time.time < endTime)
-			{
-				float currTime = Time.time;
-				float progress = (currTime - startTime) / attackDuration;
-				this.transform.localPosition = Vector3.Lerp (startPosition, endPosition, progress);
-				this.transform.localEulerAngles = Vector3.Lerp (startRotation, endRotation, progress);
-				yield return new WaitForSeconds (0.01f);
-			}
-
-			this.transform.localPosition = originalPosition;
-			this.transform.localEulerAngles = originalRotation;
-
-			yield return new WaitForSeconds (0.3f);
-
+			yield return new WaitForSeconds (weaponObject.GetComponent<Animation>().clip.length);
+			weaponObject.transform.localPosition = originalPosition;
+			weaponObject.transform.localEulerAngles = originalRotation;
 			isAttacking = false;
 
 		} else
@@ -93,22 +79,26 @@ public class BaseballBat_Weapon : MonoBehaviour
 		}
 	}
 
-	void OnTriggerEnter(Collider collider)
+
+	public void hit(Collider collider)
 	{
-		if (collider.name == "Renderer and Collider" && collider.transform.parent.name == "Zombie") {
+		if (!isLocalPlayer)
+			return;
+
+		if (collider.name == "Renderer and Collider" && (collider.transform.parent.name == "Zombie" || collider.transform.parent.name == "Zombie(Clone)")) {
 			if (isAttacking) {	
-				AudioSource.PlayClipAtPoint (hitSound, this.transform.position);
-				this.GetComponentInParent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (8f);
-				collider.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(this.transform.forward * 300f);
+				AudioSource.PlayClipAtPoint (hitSound, weaponObject.transform.position);
+				this.GetComponent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (8f);
+				collider.transform.parent.gameObject.GetComponent<Rigidbody>().AddForce(weaponObject.transform.forward * 300f);
 				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (45);
 			}
 		} else
 		if (collider.name == "Box")
 		{
 			if (isAttacking) {	
-				AudioSource.PlayClipAtPoint (hitSound, this.transform.position);
-				collider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(500,  collider.transform.position - this.transform.forward, 5);
-				this.GetComponentInParent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (8f);
+				AudioSource.PlayClipAtPoint (hitSound, weaponObject.transform.position);
+				collider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(500,  collider.transform.position - weaponObject.transform.forward, 5);
+				this.GetComponent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (8f);
 				collider.gameObject.GetComponent<Box_Controller> ().Health -= 25;
 			}
 		}

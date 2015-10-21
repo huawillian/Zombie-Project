@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class Player_Search : MonoBehaviour
+public class Player_Search : NetworkBehaviour
 {
 	public Inventory_PickUp pickupScript;
 	public GameObject actionUI;
@@ -24,6 +25,9 @@ public class Player_Search : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		pickupScript = this.gameObject.GetComponent<Inventory_PickUp> ();
 		searchInRange = new LinkedList<GameObject> ();
 		closestSearch = null;
@@ -34,6 +38,9 @@ public class Player_Search : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		if (searchInRange.Count > 0)
 		{
 			float range = 999f;
@@ -126,6 +133,9 @@ public class Player_Search : MonoBehaviour
 
 	void instantiateItems (LinkedList<string> listOfItems, Vector3 pos)
 	{
+		if (!isLocalPlayer)
+			return;
+
 		foreach (string item in listOfItems)
 		{
 			GameObject tempObj = null;
@@ -164,6 +174,9 @@ public class Player_Search : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
+		if (!isLocalPlayer)
+			return;
+
 		if (other.tag == "Search") {
 			
 			if(!searchInRange.Contains(other.gameObject))
@@ -172,6 +185,9 @@ public class Player_Search : MonoBehaviour
 	}
 	
 	void OnTriggerExit(Collider other) {
+		if (!isLocalPlayer)
+			return;
+
 		if (other.tag == "Search") {
 			searchInRange.Remove(other.gameObject);
 		}

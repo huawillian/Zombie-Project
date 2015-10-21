@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class Inventory_PickUp : MonoBehaviour
+public class Inventory_PickUp : NetworkBehaviour
 {
 	public GameObject actionUI;
 	
@@ -19,6 +20,9 @@ public class Inventory_PickUp : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+		if (!isLocalPlayer)
+			return;
+
 		inventoryScript = this.gameObject.GetComponent<Player_Inventory> ();
 		itemsInRange = new LinkedList<GameObject> ();
 		closestItem = null;
@@ -27,6 +31,9 @@ public class Inventory_PickUp : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		if (!scriptActive)
 			return;
 
@@ -80,16 +87,25 @@ public class Inventory_PickUp : MonoBehaviour
 
 	public void disableScript ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		scriptActive = false;
 	}
 
 	public void enableScript()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		scriptActive = true;
 	}
 
 	void OnTriggerEnter(Collider other)
 	{
+		if (!isLocalPlayer)
+			return;
+
 		if (other.tag == "Item") {
 
 			if(!itemsInRange.Contains(other.gameObject))
@@ -98,6 +114,9 @@ public class Inventory_PickUp : MonoBehaviour
 	}
 
 	void OnTriggerExit(Collider other) {
+		if (!isLocalPlayer)
+			return;
+
 		if (other.tag == "Item") {
 			itemsInRange.Remove(other.gameObject);
 		}

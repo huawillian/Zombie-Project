@@ -2,8 +2,9 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.Networking;
 
-public class Pistol_Ammo : MonoBehaviour
+public class Pistol_Ammo : NetworkBehaviour
 {
 	public Pistol_Weapon pistolWeaponScript;
 	public GameObject ammoPlacementUI;
@@ -11,6 +12,7 @@ public class Pistol_Ammo : MonoBehaviour
 
 	public LinkedList<GameObject> bullets;
 
+	[SerializeField, SyncVar]
 	private int ammo;
 
 	public int Ammo
@@ -25,6 +27,8 @@ public class Pistol_Ammo : MonoBehaviour
 		}
 	}
 
+	public GameObject pistolWeapon;
+
 	// Bullets starts at (-405, -170, 0) and increments by 10 in x
 	/*
 	 * 	GameObject temp = (GameObject)Instantiate (ammoUIPrefab, Vector3.zero, Quaternion.identity);
@@ -35,24 +39,20 @@ public class Pistol_Ammo : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		ammo = 5;
+		if (!isLocalPlayer)
+			return;
+
+		pistolWeaponScript = this.GetComponent<Pistol_Weapon> ();
 		bullets = new LinkedList<GameObject>();
-
-		float bulletXPos = -405;
-		for (int i=0; i<ammo; i++)
-		{
-			GameObject temp = (GameObject)Instantiate (ammoUIPrefab, Vector3.zero, Quaternion.identity);
-			temp.transform.SetParent(ammoPlacementUI.transform);
-			temp.GetComponent<RectTransform> ().localPosition = new Vector3 (bulletXPos, -170, 0);
-			bullets.AddLast(temp);
-
-			bulletXPos += 10;
-		}
+		AddAmmo (5);
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		if (pistolWeaponScript.isEquipped == false)
 		{
 			foreach(GameObject b in bullets)
@@ -71,7 +71,10 @@ public class Pistol_Ammo : MonoBehaviour
 
 	public void AddAmmo(int amount)
 	{
-		float bulletXPos = -415 + Ammo * 10;
+		if (!isLocalPlayer)
+			return;
+
+		float bulletXPos = -405 + Ammo * 10;
 
 		Ammo += amount;
 
@@ -79,7 +82,11 @@ public class Pistol_Ammo : MonoBehaviour
 		{
 			GameObject temp = (GameObject)Instantiate (ammoUIPrefab, Vector3.zero, Quaternion.identity);
 			temp.transform.SetParent(ammoPlacementUI.transform);
+			temp.GetComponent<RectTransform> ().localScale = new Vector3(1,1,1);
 			temp.GetComponent<RectTransform> ().localPosition = new Vector3 (bulletXPos, -170, 0);
+
+			//NetworkServer.Spawn(temp);
+
 			bullets.AddLast(temp);
 			bulletXPos += 10;
 		}
@@ -87,6 +94,9 @@ public class Pistol_Ammo : MonoBehaviour
 
 	public void UseAmmo(int amount)
 	{
+		if (!isLocalPlayer)
+			return;
+
 		Ammo -= amount;
 
 		for(int i=0; i<amount; i++)

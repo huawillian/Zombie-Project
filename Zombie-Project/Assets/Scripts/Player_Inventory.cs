@@ -2,8 +2,9 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.Networking;
 
-public class Player_Inventory : MonoBehaviour
+public class Player_Inventory : NetworkBehaviour
 {
 	public GameObject InventoryUI;
 	public GameObject WeaponGrid;
@@ -72,6 +73,9 @@ public class Player_Inventory : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		gridColor = Grid11.GetComponent<Image> ().color;
 		gridImage = Grid11.GetComponent<Image> ().sprite;
 		selectedColor = Color.white;
@@ -151,6 +155,9 @@ public class Player_Inventory : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		foreach(string i in grids)
 		{
 			if(i == "Grid 1 1") Grid11.GetComponent<Image>().sprite = items[i];
@@ -252,6 +259,8 @@ public class Player_Inventory : MonoBehaviour
 
 	public void LeftClickGrid(GameObject button)
 	{
+		if (!isLocalPlayer)
+			return;
 
 		if (isSelected) 
 		{
@@ -314,6 +323,11 @@ public class Player_Inventory : MonoBehaviour
 
 	public void ThrowAwayItem(string itemGridName)
 	{
+		if (!isLocalPlayer)
+			return;
+		
+
+
 		if (items [itemGridName].Equals (trashSprite) || items [itemGridName].Equals (gridImage)) {
 			return;
 		}
@@ -347,6 +361,10 @@ public class Player_Inventory : MonoBehaviour
 
 	public void PickUpItem(string itemName)
 	{
+		if (!isLocalPlayer)
+			return;
+		
+
 		AudioSource.PlayClipAtPoint (pickUpSound, this.transform.position);
 		Sprite sprite = new Sprite ();
 
@@ -376,6 +394,10 @@ public class Player_Inventory : MonoBehaviour
 
 	public void ActionGrid()
 	{
+		if (!isLocalPlayer)
+			return;
+		
+
 		if (items [selectedName].Equals (medkitSprite))
 		{
 			// Heal Player
@@ -462,6 +484,10 @@ public class Player_Inventory : MonoBehaviour
 
 	public void DropAllItems()
 	{
+		if (!isLocalPlayer)
+			return;
+		
+
 		foreach(string i in grids)
 		{
 			ThrowAwayItem(i);

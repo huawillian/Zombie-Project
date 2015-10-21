@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class Player_Timer : MonoBehaviour
+public class Player_Timer : NetworkBehaviour
 {
 	private float timeAlive;
 	private bool timerActive;
@@ -13,12 +14,18 @@ public class Player_Timer : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		StartTimer ();
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		if (timerActive)
 		{
 			timeAlive = Time.time - timeStart;
@@ -37,12 +44,18 @@ public class Player_Timer : MonoBehaviour
 
 	public void StartTimer()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		timerActive = true;
 		timeStart = Time.time;
 	}
 
 	public void StopTimer()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		timerActive = false;
 	}
 

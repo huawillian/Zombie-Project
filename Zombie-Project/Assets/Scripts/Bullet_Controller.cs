@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class Bullet_Controller : MonoBehaviour
+public class Bullet_Controller : NetworkBehaviour
 {
 	public Rigidbody bulletRigidbody;
 	public Vector3 bulletForward;
@@ -30,7 +31,7 @@ public class Bullet_Controller : MonoBehaviour
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.name == "Renderer and Collider" && collider.transform.parent.name == "Zombie") {	
+		if (collider.name == "Renderer and Collider" && (collider.transform.parent.name == "Zombie" || collider.transform.parent.name == "Zombie(Clone)")) {	
 			AudioSource.PlayClipAtPoint(shotZombieSound, this.transform.position);
 			collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(30);
 			Destroy(this.gameObject);

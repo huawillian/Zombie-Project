@@ -49,7 +49,9 @@
      <Compile Include="Assets\Animatii\Locomotion Setup\Scripts\JoystickToEvents.cs" />
      <Compile Include="Assets\Animatii\Locomotion Setup\Scripts\LocomotionPlayer.cs" />
      <Compile Include="Assets\Animatii\Zombie_0_3\Script\PlayGUI.cs" />
+     <Compile Include="Assets\BaseballBat_Trigger.cs" />
      <Compile Include="Assets\Campfire Models\Script\FireLightScript.cs" />
+     <Compile Include="Assets\Player_ZombieManager.cs" />
      <Compile Include="Assets\Scripts\BaseballBat_Weapon.cs" />
      <Compile Include="Assets\Scripts\Box_Controller.cs" />
      <Compile Include="Assets\Scripts\Bullet_Controller.cs" />
@@ -79,20 +81,15 @@
      <Compile Include="Assets\Scripts\Zombie_BasicMovement.cs" />
      <Compile Include="Assets\Scripts\Zombie_Health.cs" />
      <Compile Include="Assets\Scripts\Zombie_Spawner.cs" />
+     <Compile Include="Assets\Shove_Trigger.cs" />
      <Compile Include="Assets\Skybox\Scripts\FSPlayer.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Animatii\Zombie_0_3\AnimationFrameTable\Zombie_0_3.txt" />
- <Reference Include="UnityEngine.Advertisements">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
- </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Networking">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Analytics">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Cecil">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/Mono.Cecil.dll</HintPath>

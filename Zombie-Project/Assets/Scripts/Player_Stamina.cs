@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class Player_Stamina : MonoBehaviour 
+public class Player_Stamina : NetworkBehaviour 
 {
 	// Idle, regenerate stamina based off hunger
 	// Lose stamina based off action (only if in Idle state prior), then wait a bit before returning to Idle state
 	// Recover state initiated when stamina first becomes 0, then slowly regenerates back to full, then returns to Idle state
 	private enum StaminaState {Idle, Use, Recover};
+	[SyncVar]
 	private StaminaState state;
 	private bool transition;
 
+	[SerializeField, SyncVar]
 	private float stamina;
 	public float Stamina
 	{
@@ -42,11 +45,17 @@ public class Player_Stamina : MonoBehaviour
 		state = StaminaState.Idle;
 		transition = false;
 
+		if (!isLocalPlayer)
+			return;
+
 		StartCoroutine ("IdleRecover");
 	}
 
 	IEnumerator IdleRecover()
 	{
+		if (!isLocalPlayer)
+			yield break;
+
 		while (true) 
 		{
 			yield return new WaitForSeconds(0.1f);
@@ -82,7 +91,13 @@ public class Player_Stamina : MonoBehaviour
 
 	IEnumerator StartRecover()
 	{
+		if (!isLocalPlayer)
+			yield break;
+
 		state = StaminaState.Recover;
+
+		if (isClient)
+			CmdSyncState (state);
 
 		yield return new WaitForSeconds (1.0f);
 
@@ -94,11 +109,24 @@ public class Player_Stamina : MonoBehaviour
 
 		state = StaminaState.Idle;
 
+		if (isClient)
+			CmdSyncState (state);
+
 		yield return new WaitForSeconds (0.01f);
 	}
 
+	[Command]
+	void CmdSyncState(StaminaState st)
+	{
+		state = st;
+	}
+
+
 	public void UseStamina(float amount)
 	{
+		if (!isLocalPlayer)
+			return;
+
 		if(state == StaminaState.Recover) return;
 
 		state = StaminaState.Use;
@@ -124,6 +152,9 @@ public class Player_Stamina : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		staminaUI.GetComponent<Slider> ().value = Stamina;
 
 		if (state == StaminaState.Recover) {

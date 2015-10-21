@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class Player_Health : MonoBehaviour
+public class Player_Health :NetworkBehaviour
 {
 	public GameObject healthUI;
 	public Player_Hunger hungerScript;
@@ -10,7 +11,7 @@ public class Player_Health : MonoBehaviour
 
 	public AudioClip gruntSound;
 
-	[SerializeField]
+	[SerializeField, SyncVar]
 	private int health = 100;
 	
 	public int Health {
@@ -43,6 +44,8 @@ public class Player_Health : MonoBehaviour
 	{
 		hungerScript = this.GetComponent<Player_Hunger> ();
 		deathScript = this.GetComponent<Player_Death> ();
+		if (!isLocalPlayer)
+			return;
 		StartCoroutine ("StartHealthRegen");
 	}
 
@@ -70,13 +73,32 @@ public class Player_Health : MonoBehaviour
 
 	public void damagePlayer(int damage)
 	{
+		if (!isLocalPlayer)
+			return;
+
 		Health -= damage;
 		if(Health > 0)
 			AudioSource.PlayClipAtPoint (gruntSound, this.gameObject.transform.position);
+
+		if (isClient)
+			CmdSyncHealth (Health);
 	}
+
+	[Command]
+	void CmdSyncHealth(int hp)
+	{
+		Health = hp;
+	}
+
 
 	public void healPlayer(int amount)
 	{
+		if (!isLocalPlayer)
+			return;
+
 		Health += amount;
+
+		if (isClient)
+			CmdSyncHealth (Health);
 	}
 }

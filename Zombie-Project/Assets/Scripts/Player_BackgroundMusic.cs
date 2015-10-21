@@ -1,12 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class Player_BackgroundMusic : MonoBehaviour {
+public class Player_BackgroundMusic : NetworkBehaviour {
 
 	public AudioClip otherClip;
 	
 	IEnumerator Start()
 	{
+		if (!isLocalPlayer)
+		yield break;
+
 		AudioSource audio = this.gameObject.AddComponent<AudioSource>();
 		audio.clip = otherClip;
 

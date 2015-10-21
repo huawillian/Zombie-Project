@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class Zombie_Spawner : MonoBehaviour
+public class Zombie_Spawner : NetworkBehaviour
 {
 	public GameObject zombiePrefab;
 
@@ -11,12 +12,13 @@ public class Zombie_Spawner : MonoBehaviour
 		StartCoroutine ("StartSpawning");
 	}
 
+	[Server]
 	IEnumerator StartSpawning()
 	{
 		while (true)
 		{
 
-			Collider[] hitColliders = Physics.OverlapSphere(this.transform.position , 30f);
+			Collider[] hitColliders = Physics.OverlapSphere(this.transform.position , 10f);
 			int zombies = 0;
 			bool playerNear = false;
 			foreach (Collider col in hitColliders)
@@ -34,15 +36,12 @@ public class Zombie_Spawner : MonoBehaviour
 
 			if(!(zombies > 5) && !playerNear)
 			{
-				(Instantiate(zombiePrefab, this.transform.position, Quaternion.identity) as GameObject).name = zombiePrefab.name;
+				GameObject temp = (Instantiate(zombiePrefab, this.transform.position, Quaternion.identity) as GameObject);
+				temp.name = zombiePrefab.name;
+				NetworkServer.Spawn(temp);
 			}
 
 			yield return new WaitForSeconds((float) Random.Range(5,10));
 		}
-	}
-
-	// Update is called once per frame
-	void Update () {
-	
 	}
 }
