@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Networking;
 
-public class Search_Content : MonoBehaviour
+public class Search_Content : NetworkBehaviour
 {
 	LinkedList<string> itemsInSearch;
 	public bool isSearched;
@@ -27,7 +28,7 @@ public class Search_Content : MonoBehaviour
 		itemIndex.Add (8, "Ammo");
 		itemIndex.Add (9, "Medkit");
 
-		if (this.gameObject.name == "Fridge") 
+		if (this.gameObject.name.StartsWith("Fridge")) 
 		{
 			int amountFood = Random.Range(1,6);
 
@@ -37,7 +38,7 @@ public class Search_Content : MonoBehaviour
 			}
 		}
 		else
-		if (this.gameObject.name == "Drawers") 
+			if (this.gameObject.name.StartsWith("Drawers")) 
 		{
 			int amountItems = Random.Range(1,4);
 			
@@ -47,7 +48,7 @@ public class Search_Content : MonoBehaviour
 			}
 		}
 		else
-		if (this.gameObject.name == "Corpse") 
+			if (this.gameObject.name.StartsWith("Corpse")) 
 		{
 			int amountItems = Random.Range(0,2);
 
@@ -57,7 +58,7 @@ public class Search_Content : MonoBehaviour
 			}
 		}
 		else
-		if (this.gameObject.name == "Box") 
+		if (this.gameObject.name.StartsWith("Box")) 
 		{
 			itemsInSearch.AddFirst(itemIndex[Random.Range(0,10)]);
 			itemsInSearch.AddFirst(itemIndex[7]);

@@ -93,15 +93,40 @@ public class BaseballBat_Weapon : NetworkBehaviour
 				collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (45);
 			}
 		} else
-		if (collider.name == "Box")
+		if (collider.name.StartsWith("Box")	)
 		{
 			if (isAttacking) {	
 				AudioSource.PlayClipAtPoint (hitSound, weaponObject.transform.position);
 				collider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(500,  collider.transform.position - weaponObject.transform.forward, 5);
 				this.GetComponent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (8f);
-				collider.gameObject.GetComponent<Box_Controller> ().Health -= 25;
+				collider.gameObject.GetComponent<Box_Controller> ().Health -= 20;
+
+				if(collider.gameObject.GetComponent<Box_Controller> ().Health == 0)
+				{
+					if(isServer)
+					{
+						RpcDestroybx1(collider.gameObject);
+						Destroy(collider.gameObject);
+					}
+					else
+					{
+						CmdDestroybx1(collider.gameObject);
+					}
+				}
 			}
 		}
-		
+	}
+
+
+	[ClientRpc]
+	void RpcDestroybx1(GameObject obj)
+	{
+		Destroy(obj);
+	}
+	
+	[Command]
+	void CmdDestroybx1(GameObject obj)
+	{
+		RpcDestroybx1 (obj);
 	}
 }

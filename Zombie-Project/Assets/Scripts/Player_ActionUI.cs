@@ -12,9 +12,6 @@ public class Player_ActionUI : NetworkBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		if (!isLocalPlayer)
-			return;
-
 		searchScript = this.gameObject.GetComponent <Player_Search>();
 		pickupScript = this.gameObject.GetComponent<Inventory_PickUp> ();
 	}
@@ -41,6 +38,5 @@ public class Player_ActionUI : NetworkBehaviour
 		}
 	
 		ActionUI.SetActive (false);
-
 	}
 }

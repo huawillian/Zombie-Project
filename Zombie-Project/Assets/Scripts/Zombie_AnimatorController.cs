@@ -35,7 +35,7 @@ public class Zombie_AnimatorController : NetworkBehaviour
 
 		velMag = ((zombieModel.transform.parent.transform.position - prevPos).magnitude / Time.deltaTime); 
 
-		if (anim.enabled) {
+		if (anim != null) {
 			anim.SetFloat ("Speed", velMag);
 			RpcSyncSpeed (velMag);
 		}
@@ -47,24 +47,30 @@ public class Zombie_AnimatorController : NetworkBehaviour
 	[ClientRpc]
 	void RpcSyncSpeed(float sp)
 	{
+		if (anim != null)
 			anim.SetFloat ("Speed", sp);
 	}
 
 	[ClientRpc]
 	void RpcSyncHands(bool h)
 	{
+		if (anim != null)
 		anim.SetBool ("setHands", h);
 	}
 
 	[ClientRpc]
 	void RpcSyncHurt(bool h)
 	{
+		if (anim != null)
 		anim.SetBool ("setHurt", h);
 	}
 
 	[ClientRpc]
 	void RpcSyncDeath()
 	{
+		if (anim == null)
+			return;
+
 		anim.SetBool ("setHands", false);
 		anim.Play ("Death");
 	}
@@ -72,6 +78,8 @@ public class Zombie_AnimatorController : NetworkBehaviour
 	[ClientRpc]
 	void RpcSyncDeathSpeed()
 	{
+		if (anim == null)
+			return;
 		anim.speed = 0;
 	}
 

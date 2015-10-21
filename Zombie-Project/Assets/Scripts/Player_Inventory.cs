@@ -73,9 +73,6 @@ public class Player_Inventory : NetworkBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		if (!isLocalPlayer)
-			return;
-
 		gridColor = Grid11.GetComponent<Image> ().color;
 		gridImage = Grid11.GetComponent<Image> ().sprite;
 		selectedColor = Color.white;
@@ -325,60 +322,146 @@ public class Player_Inventory : NetworkBehaviour
 	{
 		if (!isLocalPlayer)
 			return;
-		
-
 
 		if (items [itemGridName].Equals (trashSprite) || items [itemGridName].Equals (gridImage)) {
 			return;
 		}
 
-		if (items [itemGridName].Equals (ammoSprite)) {
-			(Instantiate(ammoPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = ammoPrefab.name;
+		if (items [itemGridName].Equals (ammoSprite))
+		{
+			if(isServer)
+			{
+				GameObject temp = (Instantiate(ammoPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject);
+				temp.name = ammoPrefab.name;
+				NetworkServer.Spawn(temp);
+			}
+			else
+			{
+				CmdSpawn(ammoPrefab.name, this.gameObject);
+			}
 		}
 
 		if (items [itemGridName].Equals (foodSprite)) {
-			(Instantiate(foodPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = foodPrefab.name;
+			if(isServer)
+			{
+				GameObject temp = (Instantiate(foodPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject);
+				temp.name = foodPrefab.name;
+				NetworkServer.Spawn(temp);
+			}
+			else
+			{
+				CmdSpawn(foodPrefab.name, this.gameObject);
+			}
 		}
 
 		if (items [itemGridName].Equals (medkitSprite)) {
-			(Instantiate(medkitPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = medkitPrefab.name;
+			if(isServer)
+			{
+				GameObject temp = (Instantiate(medkitPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject);
+				temp.name = medkitPrefab.name;
+				NetworkServer.Spawn(temp);
+			}
+			else
+			{
+				CmdSpawn(medkitPrefab.name, this.gameObject);
+			}
 		}
 
 		if (items [itemGridName].Equals (batSprite)) {
-			(Instantiate(batPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = batPrefab.name;
+			if(isServer)
+			{
+				GameObject temp = (Instantiate(batPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject);
+				temp.name = batPrefab.name;
+				NetworkServer.Spawn(temp);
+			}
+			else
+			{
+				CmdSpawn(batPrefab.name, this.gameObject);
+			}
 		}
 
 		if (items [itemGridName].Equals (woodSprite)) {
-			(Instantiate(woodPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = woodPrefab.name;
+			if(isServer)
+			{
+				GameObject temp = (Instantiate(woodPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject);
+				temp.name = woodPrefab.name;
+				NetworkServer.Spawn(temp);
+			}
+			else
+			{
+				CmdSpawn(woodPrefab.name, this.gameObject);
+			}
 		}
 
 		if (items [itemGridName].Equals (pistolSprite)) {
-			(Instantiate(pistolPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject).name = pistolPrefab.name;
+			if(isServer)
+			{
+				GameObject temp = (Instantiate(pistolPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject);
+				temp.name = pistolPrefab.name;
+				NetworkServer.Spawn(temp);
+			}
+			else
+			{
+				CmdSpawn(pistolPrefab.name, this.gameObject);
+			}
 		}
 
 		items [itemGridName] = gridImage;
 	}
 
+	[Command]
+	void CmdSpawn(string nm, GameObject pl)
+	{
+		GameObject temp = new GameObject ();
+
+		if (nm == "Ammo")
+			temp = (Instantiate(ammoPrefab, pl.transform.position + pl.transform.forward, Quaternion.identity) as GameObject);
+		if (nm == "Food")
+			temp = (Instantiate(foodPrefab, pl.transform.position + pl.transform.forward, Quaternion.identity) as GameObject);
+		if (nm == "Baseball Bat")
+			temp = (Instantiate(batPrefab, pl.transform.position + pl.transform.forward, Quaternion.identity) as GameObject);
+		if (nm == "Medkit")
+			temp = (Instantiate(medkitPrefab, pl.transform.position + pl.transform.forward, Quaternion.identity) as GameObject);
+		if (nm == "Pistol")
+			temp = (Instantiate(pistolPrefab, pl.transform.position + pl.transform.forward, Quaternion.identity) as GameObject);
+		if (nm == "Wood")
+			temp = (Instantiate(woodPrefab, pl.transform.position + pl.transform.forward, Quaternion.identity) as GameObject);
+
+		temp.name = nm;
+		NetworkServer.Spawn (temp);
+	}
+
+	[Command]
+	void CmdSpawnWoodThrow(GameObject pl)
+	{
+		// Throw wood in front of player
+		GameObject tempObj =  Instantiate(woodPrefab, pl.transform.position + pl.transform.forward, Quaternion.identity) as GameObject;
+		tempObj.name = woodPrefab.name;
+		StartCoroutine(ThrowWood(tempObj, pl));
+
+		NetworkServer.Spawn (tempObj);
+
+	}
+	
 	public void PickUpItem(string itemName)
 	{
 		if (!isLocalPlayer)
 			return;
-		
 
 		AudioSource.PlayClipAtPoint (pickUpSound, this.transform.position);
 		Sprite sprite = new Sprite ();
 
-		if (itemName == "Ammo")
+		if (itemName.StartsWith("Ammo") || itemName == "Ammo(Clone)")
 			sprite = ammoSprite;
-		if (itemName == "Food")
+		if (itemName.StartsWith("Food") || itemName == "Food(Clone)")
 			sprite = foodSprite;
-		if (itemName == "Baseball Bat")
+		if (itemName.StartsWith("Baseball Bat") || itemName == "Baseball Bat(Clone)")
 			sprite = batSprite;
-		if (itemName == "Medkit")
+		if (itemName.StartsWith("Medkit") || itemName == "Medkit(Clone)")
 			sprite = medkitSprite;
-		if (itemName == "Pistol")
+		if (itemName.StartsWith("Pistol") || itemName == "Pistol(Clone)")
 			sprite = pistolSprite;
-		if (itemName == "Wood")
+		if (itemName.StartsWith("Wood") || itemName == "Wood(Clone)")
 			sprite = woodSprite;
 
 		foreach (string i in grids) {
@@ -396,7 +479,6 @@ public class Player_Inventory : NetworkBehaviour
 	{
 		if (!isLocalPlayer)
 			return;
-		
 
 		if (items [selectedName].Equals (medkitSprite))
 		{
@@ -415,12 +497,20 @@ public class Player_Inventory : NetworkBehaviour
 
 		if (items [selectedName].Equals (woodSprite))
 		{
-			// Throw wood in front of player
-			GameObject tempObj =  Instantiate(woodPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject;
-			tempObj.name = woodPrefab.name;
-			StartCoroutine("ThrowWood", tempObj);
-			items[selectedName] = gridImage;
+			if(isServer)
+			{
+				// Throw wood in front of player
+				GameObject tempObj =  Instantiate(woodPrefab, this.transform.position + this.transform.forward, Quaternion.identity) as GameObject;
+				tempObj.name = woodPrefab.name;
+				StartCoroutine("ThrowWood", tempObj);
+				NetworkServer.Spawn(tempObj);
+			}
+			else
+			{
+				CmdSpawnWoodThrow(this.gameObject);
+			}
 
+			items[selectedName] = gridImage;
 
 			isSelected = false;
 			GameObject.Find(selectedName).GetComponent<Image>().color = gridColor;
@@ -482,11 +572,17 @@ public class Player_Inventory : NetworkBehaviour
 		this.GetComponent<Player_Noise>().GenerateNoiseAtPosWithDistance(wood.transform.position, 15f);
 	}
 
+	IEnumerator ThrowWood(GameObject wood, GameObject pla)
+	{
+		wood.GetComponent<Rigidbody> ().AddExplosionForce (1000, pla.transform.position + Vector3.down/2, 10);
+		yield return new WaitForSeconds (2.0f);
+		this.GetComponent<Player_Noise>().GenerateNoiseAtPosWithDistance(wood.transform.position, 15f);
+	}
+	
 	public void DropAllItems()
 	{
 		if (!isLocalPlayer)
 			return;
-		
 
 		foreach(string i in grids)
 		{

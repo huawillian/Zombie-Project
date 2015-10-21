@@ -4,18 +4,30 @@ using UnityEngine.Networking;
 
 public class Player_Noise : NetworkBehaviour
 {
-	void Start()
-	{
-
-	}
-
 	public void GenerateNoiseAtPlayer()
 	{
 		if (!isLocalPlayer)
 			return;
 
-		Collider[] hitColliders = Physics.OverlapSphere(this.transform.position , 20f);
+		if (isServer) {
+			Collider[] hitColliders = Physics.OverlapSphere(this.transform.position , 20f);
+			
+			foreach (Collider col in hitColliders) {
+				if(col.name == "Zombie" || col.name == "Zombie(Clone)")
+				{
+					col.gameObject.GetComponent<Zombie_BasicMovement>().MoveToPos(this.transform.position);
+				}
+			}
+		} else {
+			CmdGenerateNoise(this.transform.position, 20f);
+		}
+	}
 
+	[Command]
+	void CmdGenerateNoise(Vector3 pos, float range)
+	{
+		Collider[] hitColliders = Physics.OverlapSphere(pos , range);
+		
 		foreach (Collider col in hitColliders) {
 			if(col.name == "Zombie" || col.name == "Zombie(Clone)")
 			{
@@ -29,13 +41,17 @@ public class Player_Noise : NetworkBehaviour
 		if (!isLocalPlayer)
 			return;
 
-		Collider[] hitColliders = Physics.OverlapSphere(pos , 20f);
-		
-		foreach (Collider col in hitColliders) {
-			if(col.name == "Zombie" || col.name == "Zombie(Clone)")
-			{
-				col.gameObject.GetComponent<Zombie_BasicMovement>().MoveToPos(pos);
+		if (isServer) {
+			Collider[] hitColliders = Physics.OverlapSphere(pos , 20f);
+			
+			foreach (Collider col in hitColliders) {
+				if(col.name == "Zombie" || col.name == "Zombie(Clone)")
+				{
+					col.gameObject.GetComponent<Zombie_BasicMovement>().MoveToPos(this.transform.position);
+				}
 			}
+		} else {
+			CmdGenerateNoise(pos, 20f);
 		}
 	}
 
@@ -44,13 +60,17 @@ public class Player_Noise : NetworkBehaviour
 		if (!isLocalPlayer)
 			return;
 
-		Collider[] hitColliders = Physics.OverlapSphere(this.transform.position , dist);
-		
-		foreach (Collider col in hitColliders) {
-			if(col.name == "Zombie" || col.name == "Zombie(Clone)")
-			{
-				col.gameObject.GetComponent<Zombie_BasicMovement>().MoveToPos(this.transform.position);
+		if (isServer) {
+			Collider[] hitColliders = Physics.OverlapSphere(this.transform.position , dist);
+			
+			foreach (Collider col in hitColliders) {
+				if(col.name == "Zombie" || col.name == "Zombie(Clone)")
+				{
+					col.gameObject.GetComponent<Zombie_BasicMovement>().MoveToPos(this.transform.position);
+				}
 			}
+		} else {
+			CmdGenerateNoise(this.transform.position, dist);
 		}
 	}
 
@@ -59,13 +79,17 @@ public class Player_Noise : NetworkBehaviour
 		if (!isLocalPlayer)
 			return;
 
-		Collider[] hitColliders = Physics.OverlapSphere(pos , dist);
-		
-		foreach (Collider col in hitColliders) {
-			if(col.name == "Zombie" || col.name == "Zombie(Clone)")
-			{
-				col.gameObject.GetComponent<Zombie_BasicMovement>().MoveToPos(pos);
+		if (isServer) {
+			Collider[] hitColliders = Physics.OverlapSphere(pos, dist);
+			
+			foreach (Collider col in hitColliders) {
+				if(col.name == "Zombie" || col.name == "Zombie(Clone)")
+				{
+					col.gameObject.GetComponent<Zombie_BasicMovement>().MoveToPos(this.transform.position);
+				}
 			}
+		} else {
+			CmdGenerateNoise(pos, dist);
 		}
 	}
 

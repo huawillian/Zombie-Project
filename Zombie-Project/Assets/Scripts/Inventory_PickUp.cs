@@ -20,9 +20,6 @@ public class Inventory_PickUp : NetworkBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		if (!isLocalPlayer)
-			return;
-
 		inventoryScript = this.gameObject.GetComponent<Player_Inventory> ();
 		itemsInRange = new LinkedList<GameObject> ();
 		closestItem = null;
@@ -73,7 +70,17 @@ public class Inventory_PickUp : NetworkBehaviour
 					AudioSource.PlayClipAtPoint(pickupSound, this.transform.position);
 					inventoryScript.PickUpItem(closestItem.name);
 					itemsInRange.Remove(closestItem);
-					Destroy(closestItem.gameObject);
+
+					if(isServer)
+					{
+						RpcDestroy(closestItem.gameObject);
+						Destroy(closestItem.gameObject);
+					}
+					else
+					{
+						CmdDestroy(closestItem.gameObject);
+					}
+
 					closestItem = null;
 				}
 			}
@@ -85,27 +92,31 @@ public class Inventory_PickUp : NetworkBehaviour
 		}
 	}
 
+	[ClientRpc]
+	void RpcDestroy(GameObject obj)
+	{
+		Destroy(obj);
+	}
+
+	[Command]
+	void CmdDestroy(GameObject obj)
+	{
+		RpcDestroy (obj);
+	}
+
+
 	public void disableScript ()
 	{
-		if (!isLocalPlayer)
-			return;
-
 		scriptActive = false;
 	}
 
 	public void enableScript()
 	{
-		if (!isLocalPlayer)
-			return;
-
 		scriptActive = true;
 	}
 
 	void OnTriggerEnter(Collider other)
 	{
-		if (!isLocalPlayer)
-			return;
-
 		if (other.tag == "Item") {
 
 			if(!itemsInRange.Contains(other.gameObject))
@@ -114,9 +125,6 @@ public class Inventory_PickUp : NetworkBehaviour
 	}
 
 	void OnTriggerExit(Collider other) {
-		if (!isLocalPlayer)
-			return;
-
 		if (other.tag == "Item") {
 			itemsInRange.Remove(other.gameObject);
 		}

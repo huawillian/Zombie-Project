@@ -90,14 +90,40 @@ public class Shove_Weapon : NetworkBehaviour
 				collider.transform.parent.gameObject.GetComponent<Rigidbody> ().AddForce (weaponObject.transform.forward * 300f);
 			}
 		} else
-		if (collider.name == "Box") {
+		if (collider.name.StartsWith("Box")) {
 			if (isShoving) {	
 				AudioSource.PlayClipAtPoint (hitSound, weaponObject.transform.position);
 				collider.gameObject.GetComponent<Rigidbody> ().AddExplosionForce (1000, collider.transform.position - weaponObject.transform.forward, 5);
 				weaponObject.GetComponentInParent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (3f);
-				collider.gameObject.GetComponent<Box_Controller> ().Health -= 15;
+				collider.gameObject.GetComponent<Box_Controller> ().Health -= 10;
+
+				if(collider.gameObject.GetComponent<Box_Controller> ().Health == 0)
+				{
+					if(isServer)
+					{
+						RpcDestroybx(collider.gameObject);
+						Destroy(collider.gameObject);
+					}
+					else
+					{
+						CmdDestroybx(collider.gameObject);
+					}
+				}
+
 			}
 		}
+	}
+
+	[ClientRpc]
+	void RpcDestroybx(GameObject obj)
+	{
+		Destroy(obj);
+	}
+	
+	[Command]
+	void CmdDestroybx(GameObject obj)
+	{
+		RpcDestroybx (obj);
 	}
 
 }
