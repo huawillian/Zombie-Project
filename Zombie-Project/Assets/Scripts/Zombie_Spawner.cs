@@ -34,14 +34,14 @@ public class Zombie_Spawner : NetworkBehaviour
 				}
 			}
 
-			if(!(zombies > 5) && !playerNear)
+			if(!(zombies > 10) && !playerNear)
 			{
 				GameObject temp = (Instantiate(zombiePrefab, this.transform.position, Quaternion.identity) as GameObject);
 				temp.name = zombiePrefab.name;
 				NetworkServer.Spawn(temp);
 			}
 
-			yield return new WaitForSeconds((float) Random.Range(5,10));
+			yield return new WaitForSeconds((float) Random.Range(10,15));
 		}
 	}
 }

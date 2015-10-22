@@ -112,7 +112,7 @@ public class Zombie_BasicMovement : NetworkBehaviour
 
 		Debug.Log ("Start Attack");
 		AudioSource.PlayClipAtPoint(attackSound, this.transform.position);
-		this.agent.speed = 4.5f;
+		this.agent.speed = 4.0f;
 
 		while (state == ZombieState.Attack)
 		{
@@ -237,7 +237,7 @@ public class Zombie_BasicMovement : NetworkBehaviour
 
 		while (state == ZombieState.Move)
 		{
-			agent.speed = 4.5f;
+			agent.speed = 3.0f;
 			agent.SetDestination(pos);
 
 			if(Vector3.Distance(zombie.transform.position, pos) < 2f || isDamaged)
@@ -256,9 +256,11 @@ public class Zombie_BasicMovement : NetworkBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (!isServer) {
-			this.gameObject.transform.position = pos;
-			this.gameObject.transform.localEulerAngles = rot;
+		if (!isServer)
+		{
+			this.gameObject.transform.position = Vector3.Lerp(this.transform.position, pos, 0.9f);
+			this.gameObject.transform.localEulerAngles = Vector3.Lerp(this.transform.localEulerAngles, rot, 0.9f);
+
 		} else {
 			pos = this.transform.position;
 			rot = this.transform.localEulerAngles;

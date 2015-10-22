@@ -139,11 +139,9 @@ public class Player_Inventory : NetworkBehaviour
 		grids.Add("Grid Trash");
 
 		items ["Grid 1 1"] = ammoSprite;
+		items ["Grid 1 3"] = ammoSprite;
 		items ["Grid 1 2"] = foodSprite;
-		items ["Grid 1 3"] = batSprite;
 		items ["Grid 1 4"] = medkitSprite;
-		items ["Grid 2 1"] = pistolSprite;
-		items ["Grid 2 2"] = woodSprite;
 
 		selectedName = "";
 		InventoryUI.gameObject.SetActive (false);
@@ -171,7 +169,6 @@ public class Player_Inventory : NetworkBehaviour
 			if(i == "Grid 3 2") Grid32.GetComponent<Image>().sprite = items[i];
 			if(i == "Grid 3 3") Grid33.GetComponent<Image>().sprite = items[i];
 			if(i == "Grid 3 4") Grid34.GetComponent<Image>().sprite = items[i];
-
 			if(i == "Grid 4 1") Grid41.GetComponent<Image>().sprite = items[i];
 			if(i == "Grid 4 2") Grid42.GetComponent<Image>().sprite = items[i];
 			if(i == "Grid 4 3") Grid43.GetComponent<Image>().sprite = items[i];

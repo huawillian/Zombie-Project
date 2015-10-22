@@ -84,7 +84,7 @@ public class Pistol_Ammo : NetworkBehaviour
 			temp.transform.SetParent(ammoPlacementUI.transform);
 			temp.GetComponent<RectTransform> ().localScale = new Vector3(1,1,1);
 			temp.GetComponent<RectTransform> ().localPosition = new Vector3 (bulletXPos, -170, 0);
-
+			temp.GetComponent<RectTransform> ().eulerAngles = Vector3.zero;
 			//NetworkServer.Spawn(temp);
 
 			bullets.AddLast(temp);

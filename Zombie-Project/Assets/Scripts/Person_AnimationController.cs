@@ -34,9 +34,11 @@ public class Person_AnimationController : NetworkBehaviour
 			if(!deathFlag && anim.GetBool("setDeath"))
 			{
 				anim.Play ("Standing", 0);
+				anim.SetBool ("setDeath", deathFlag);
 			}
 
-			anim.SetBool ("setDeath", deathFlag);
+			if(deathFlag)
+				anim.SetBool ("setDeath", true);
 
 			if(!anim.GetBool("setPicking") && pickupFlag)
 			{
@@ -70,15 +72,16 @@ public class Person_AnimationController : NetworkBehaviour
 		deathFlag = isDeath;
 		anim.SetBool ("setDeath", isDeath);
 
-		if(!isDeath)
+		if (!isDeath)
 			anim.Play ("Standing", 0);
+
 	}
 
 	[Command]
 	void CmdSetPickupOnServer(bool isPick)
 	{
 		pickupFlag = isPick;
-		anim.SetBool ("setDeath", isPick);
+		anim.SetBool ("setPicking", isPick);
 
 		if (isPick)
 			anim.Play ("Picking", 1);
