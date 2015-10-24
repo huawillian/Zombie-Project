@@ -62,8 +62,12 @@ public class Player_Death : NetworkBehaviour
 
 		deathUI.SetActive(false);
 		this.gameObject.GetComponent<Player_Health>().Health = 100;
-		this.gameObject.transform.position = Vector3.zero;
-		
+
+
+		GameObject[] spawns = GameObject.FindGameObjectsWithTag ("Spawn");
+		this.gameObject.transform.position = spawns [Random.Range (0, spawns.Length)].transform.position;
+
+
 		this.gameObject.GetComponent<Player_Death>().isDead = false;
 		Cursor.visible = false;
 		

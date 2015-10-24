@@ -4,24 +4,36 @@ using UnityEngine.Networking;
 
 public class Zombie_Health : NetworkBehaviour
 {
-	public GameObject corpsePrefab;
+	[SyncVar]
+	private int health = 100;
 
 	[SyncVar, SerializeField]
-	private int health = 100;
+	private string uniqueName;
 
 	public AudioClip damageSound;
 	public AudioClip deathSound;
-	
-	public int Health {
+
+	public bool isDead = false;
+
+	public GameObject corpsePrefab;
+	Player_ZombieManager zombieManagerWithAuth;
+
+	public int Health
+	{
 		get{
 			return health;
 		}
 		set {
 			if(value > 100) health = 100;
-			else if(value <= 0 && health != 0)
+			else if(value <= 0)
 			{
 				health= 0;
-				this.setDeath();
+
+				if(!isDead && isServer)
+				{
+					isDead = true;
+					SetDeath();
+				}
 			}
 			else 
 			{
@@ -29,98 +41,46 @@ public class Zombie_Health : NetworkBehaviour
 			}
 		}
 	}
-	
-	[Command]
-	void CmdSyncHealth(int hp)
+
+	void Start()
 	{
-		Health = hp;
+		NetworkProximityChecker prox = this.GetComponent<NetworkProximityChecker> ();
+		prox.visRange = 25;
+		prox.visUpdateInterval = Random.Range (5f,10f);
+
+		foreach(GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+		{
+			if(player.GetComponent<NetworkIdentity>().isLocalPlayer)
+			{
+				zombieManagerWithAuth = player.GetComponent<Player_ZombieManager>();
+			}
+		}
+	}
+
+	public override void OnStartServer()
+	{
+		uniqueName = "Zombie_" + this.gameObject.GetInstanceID ().ToString ();
+		this.name = uniqueName;
+	}
+	
+	public override void OnStartClient()
+	{
+		this.name = uniqueName;
+		
+		if (!isServer)
+		{
+			this.GetComponent<Rigidbody> ().useGravity = false;
+			this.GetComponent<Rigidbody> ().isKinematic = true;
+		}
 	}
 
 	public void damageZombie(int damage)
 	{
-		Health -= damage;
-		AudioSource.PlayClipAtPoint(damageSound, this.transform.position);
-
-
-		if (isServer) {
-			Debug.Log("isServer dmg zombie");
-			RpcSyncDmg ();
-		}
-
-		if (isClient)
-		{
-			//CmdSyncHealth (Health);
-
-			foreach(GameObject o in GameObject.FindGameObjectsWithTag("Player"))
-			{
-				o.GetComponent<Player_ZombieManager>().SyncZombieHealth(this.gameObject, Health);
-				o.GetComponent<Player_ZombieManager>().SyncZombieDmg(this.gameObject);
-			}
-
-			//CmdSyncDmg ();
-		}
+		zombieManagerWithAuth.SyncDamageZombie (uniqueName, damage);
 	}
-
-	[Command]
-	void CmdSyncDmg()
+	
+	public void SetDeath()
 	{
-		RpcSyncDmg ();
-	}
-
-	[ClientRpc]
-	void RpcSyncDmg()
-	{
-		AudioSource.PlayClipAtPoint(damageSound, this.transform.position);
-		this.GetComponentInChildren<Zombie_AnimatorController>().StartCoroutine("setHurt");
-		this.GetComponent<Zombie_BasicMovement> ().isDamaged = true;
-		this.GetComponent<Zombie_BasicMovement> ().StopCoroutine ("ResetDamaged");
-		this.GetComponent<Zombie_BasicMovement> ().StartCoroutine ("ResetDamaged");
-	}
-
-
-	public void setDeath()
-	{
-		AudioSource.PlayClipAtPoint(deathSound, this.transform.position);
-
-		foreach(GameObject o in GameObject.FindGameObjectsWithTag("Player"))
-		{
-			o.GetComponent<Player_ZombieManager>().SyncZombieDeath(this.gameObject);
-		}
-
-		/*
-		if (isServer)
-			RpcSyncDeath ();
-		*/	
-	}
-
-	[ClientRpc]
-	void RpcSyncDeath()
-	{
-		AudioSource.PlayClipAtPoint(deathSound, this.transform.position);
-		
-		this.GetComponent<Zombie_AnimatorController>().StartCoroutine("setDeath");
-		this.GetComponent<NavMeshAgent>().enabled = false;
-		this.GetComponent<Zombie_BasicMovement>().StopAllCoroutines();
-		
-		CapsuleCollider[] cols = this.GetComponentsInChildren<CapsuleCollider>();
-		
-		foreach(CapsuleCollider col in cols)
-		{
-			if(col.gameObject.activeInHierarchy)
-				col.gameObject.SetActive(false);
-		}
-		
-		this.GetComponent<Rigidbody>().isKinematic = true;
-
-		this.gameObject.name = "Corpse";
-		gameObject.AddComponent<Search_Content>();
-		gameObject.AddComponent<BoxCollider>().isTrigger = true;
-		this.gameObject.tag = "Search";
-	}
-
-	[Command]
-	void CmdSyncDeath()
-	{
-		RpcSyncDeath ();
+		zombieManagerWithAuth.SyncDeathZombie (uniqueName);
 	}
 }

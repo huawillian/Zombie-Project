@@ -101,4 +101,9 @@ public class Player_Health :NetworkBehaviour
 		if (isClient)
 			CmdSyncHealth (Health);
 	}
+
+	public void ReturnToMainMenu()
+	{
+		NetworkManager.singleton.StopHost ();
+	}
 }

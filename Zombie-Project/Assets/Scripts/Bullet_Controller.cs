@@ -31,7 +31,7 @@ public class Bullet_Controller : NetworkBehaviour
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.name == "Renderer and Collider" && (collider.transform.parent.name == "Zombie" || collider.transform.parent.name == "Zombie(Clone)")) {	
+		if (collider.name == "Renderer and Collider" && collider.transform.parent.name.StartsWith("Zombie")) {	
 			AudioSource.PlayClipAtPoint(shotZombieSound, this.transform.position);
 			collider.gameObject.transform.parent.gameObject.GetComponent<Zombie_Health>().damageZombie(30);
 			Destroy(this.gameObject);

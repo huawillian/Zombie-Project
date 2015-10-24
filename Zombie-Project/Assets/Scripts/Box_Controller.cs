@@ -7,19 +7,32 @@ public class Box_Controller : NetworkBehaviour
 {
 	Search_Content searchScript;
 
-	public GameObject baseballBatPrefab;
-	public GameObject pistolPrefab;
-	public GameObject ammoPrefab;
-	public GameObject foodPrefab;
-	public GameObject medkitPrefab;
-	public GameObject woodPrefab;
+	Player_BoxManager boxManagerWithAuth;
 
-	public GameObject player;
-	
+	[SyncVar, SerializeField]
+	private string uniqueName;
+
 	[SyncVar, SerializeField]
 	private int health = 100;
-	
-	public int Health{
+
+	[SyncVar]
+	private Vector3 pos;
+	[SyncVar]
+	private Vector3 rot;
+
+	[SyncVar]
+	private float qx;
+	[SyncVar]
+	private float qy;
+	[SyncVar]
+	private float qz;
+	[SyncVar]
+	private float qw;
+
+	private bool isDead = false;
+
+	public int Health
+	{
 		get{
 			return health;
 		}
@@ -33,27 +46,84 @@ public class Box_Controller : NetworkBehaviour
 			{
 				health = value;
 			}
-
-			if(!isServer)
-				CmdSyncHealth(Health);
 		}
-	}
-
-	[Command]
-	void CmdSyncHealth(int hp)
-	{
-		Health = hp;
 	}
 
 	// Use this for initialization
 	void Start ()
 	{
+		NetworkProximityChecker prox = this.GetComponent<NetworkProximityChecker> ();
+		prox.visRange = 25;
+		prox.visUpdateInterval = Random.Range (5f,10f);
+
+
 		searchScript = this.GetComponent<Search_Content> ();
+
+		foreach(GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+		{
+			if(player.GetComponent<NetworkIdentity>().isLocalPlayer)
+			{
+				boxManagerWithAuth = player.GetComponent<Player_BoxManager>();
+			}
+		}
+	}
+
+	void Update()
+	{
+		if (isServer) {
+			pos = this.transform.position;
+			rot = this.transform.localEulerAngles;
+			qx = this.transform.localRotation.x;
+			qy = this.transform.localRotation.y;
+			qz = this.transform.localRotation.z;
+			qw = this.transform.localRotation.w;
+
+			if(!isDead && Health == 0)
+			{
+				if (boxManagerWithAuth == null)
+					return;
+
+				isDead = true;
+				boxManagerWithAuth.DestroyBox(uniqueName);
+			}
+
+		} else
+		{
+			this.transform.position = Vector3.MoveTowards(this.transform.position, pos, Time.deltaTime * 15f);
+			this.transform.localRotation =  Quaternion.Lerp(this.transform.localRotation, new Quaternion(qx,qy,qz,qw), Time.deltaTime * 15f);
+		}
+	}
+
+	public override void OnStartServer()
+	{
+		uniqueName = "Box_" + this.gameObject.GetInstanceID ().ToString ();
+		this.name = uniqueName;
+	}
+
+	public override void OnStartClient()
+	{
+		this.name = uniqueName;
+
+		if (!isServer)
+		{
+			this.GetComponent<Rigidbody> ().useGravity = false;
+			this.GetComponent<Rigidbody> ().isKinematic = true;
+		}
 	}
 
 	void OnTriggerEnter(Collider obj)
 	{
-		if (obj.name == "Player")
-			player = obj.gameObject;
+		if (boxManagerWithAuth == null)
+			return;
+
+		if (obj.name.StartsWith ("Shove Weapon") && obj.GetComponentInParent<Shove_Weapon>().isShoving)
+		{
+			boxManagerWithAuth.BoxForceLocDmgClient(uniqueName, 1000f, obj.gameObject.transform.position, 10);
+		}
+
+		if (obj.name.StartsWith ("Baseball Bat Weapon") && obj.GetComponentInParent<BaseballBat_Weapon>().isAttacking)
+		{
+			boxManagerWithAuth.BoxForceLocDmgClient(uniqueName, 500f, obj.gameObject.transform.position, 20);
+		}
 	}
 }

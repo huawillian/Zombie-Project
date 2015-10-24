@@ -4,290 +4,169 @@ using UnityEngine.Networking;
 
 public class Zombie_BasicMovement : NetworkBehaviour
 {
-	public enum ZombieState{Idle, Move, Attack};
+	public enum ZombieState{Idle, Move, Attack, Death};
 	public ZombieState state;
-
-	GameObject zombie;
-	GameObject player;
-	Rigidbody zombieRigidbody;
 
 	public AudioClip idleSound;
 	public AudioClip attackSound;
 
 	public NavMeshAgent agent;
+	public Vector3 destination;
+	public GameObject playerToAttack;
 
 	[SyncVar]
-	public bool isDamaged;
-	public bool isRecovering;
-
+	private Vector3 pos;
 	[SyncVar]
-	public Vector3 pos;
-	[SyncVar]
-	public Vector3 rot;
+	private Vector3 rot;
 	
+	[SyncVar]
+	private float qx;
+	[SyncVar]
+	private float qy;
+	[SyncVar]
+	private float qz;
+	[SyncVar]
+	private float qw;
+
 	// Use this for initialization
 	void Start ()
 	{
-		zombie = this.gameObject;
-		zombieRigidbody = zombie.GetComponent<Rigidbody> ();
+		this.StartCoroutine ("PlayIdleSound");
+	}
+
+	public override void OnStartServer()
+	{
 		state = ZombieState.Idle;
 		agent = this.GetComponent<NavMeshAgent> ();
 		agent.speed = 1.0f;
+		destination = this.transform.position;
 
-		isDamaged = false;
-		isRecovering = false;
+		StartCoroutine ("SetPlayerDestination");
+	}
 
-		if (!isServer)
+	IEnumerator SetPlayerDestination()
+	{
+		while (true) {
+			yield return new WaitForSeconds (20f);
+			if (state == ZombieState.Idle) {
+				GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");
+
+				MoveToPos (players [Random.Range (0, players.Length)].transform.position);
+			}
+		}
+	}
+
+
+	void Update()
+	{
+		if (isServer)
+		{
+			SetDestinationBasedState ();
+
+			pos = this.transform.position;
+			rot = this.transform.localEulerAngles;
+			qx = this.transform.localRotation.x;
+			qy = this.transform.localRotation.y;
+			qz = this.transform.localRotation.z;
+			qw = this.transform.localRotation.w;
+		} else
+		{
+			this.transform.position = Vector3.MoveTowards(this.transform.position, pos, Time.deltaTime * 5f);
+			this.transform.localRotation =  Quaternion.Lerp(this.transform.localRotation, new Quaternion(qx,qy,qz,qw), Time.deltaTime * 5f);
+		}
+	}
+
+	private void SetDestinationBasedState()
+	{
+		if (state == ZombieState.Death) {
 			return;
+		}
 		
-		this.StartCoroutine ("StartPatrol");
-		this.StartCoroutine ("PlayIdleSound");
+		if (state == ZombieState.Move) {
+			agent.SetDestination (destination);
+			
+			if (Vector3.Distance (this.transform.position, destination) < 1.0f) {
+				agent.speed = 1.0f;
+				state = ZombieState.Idle;
+			}
+		}
+		
+		if (state == ZombieState.Idle) {
+			agent.SetDestination (destination);
+			
+			if (Vector3.Distance (this.transform.position, destination) < 1.0f) {
+				destination = new Vector3 (this.transform.position.x + Random.Range (-10, 10), this.transform.position.y, this.transform.position.z + Random.Range (-10, 10));
+			}
+		}
+		
+		if (state == ZombieState.Attack) {
+			if (playerToAttack != null) {
+				agent.SetDestination (playerToAttack.transform.position);
+			} else {
+				agent.speed = 1.0f;
+				state = ZombieState.Idle;
+			}
+		}
+	}
+
+	[Server]
+	public void SetDeath()
+	{
+		if (state == ZombieState.Death)
+			return;
+
+		state = ZombieState.Death;
+		agent.Stop(true);
+		agent.updatePosition = false;
+		agent.updateRotation = false;
+		agent.enabled = false;
 	}
 
 	IEnumerator PlayIdleSound()
 	{
-		if (!isServer)
-			yield break;
-
-		yield return new WaitForSeconds((float)Random.Range(0,10));
-
 		while(true)
 		{
+			yield return new WaitForSeconds((float)Random.Range(0,10));
+
 			if(this.state == ZombieState.Idle)
 			{
 				AudioSource.PlayClipAtPoint(idleSound, this.transform.position);
 			}
-
-			yield return new WaitForSeconds((float)Random.Range(0,10));
 		}
 	}
 
-	IEnumerator StartPatrol()
-	{		
-		if (!isServer)
-			yield break;
-
-		while (state == ZombieState.Idle)
-		{
-			if (!agent.enabled)
-				yield break;
-
-			if(isDamaged)
-			{
-				yield return new WaitForSeconds(1.0f);
-				continue;
-			}
-
-			int move = Random.Range(0, 3);
-
-			switch(move)
-			{
-				case 0:
-				yield return this.StartCoroutine("MoveForward");
-					break;
-				case 1:
-				yield return this.StartCoroutine("TurnRight");
-					break;
-				case 2:
-				yield return this.StartCoroutine("TurnLeft");
-					break;
-				case 3:
-				//yield return this.StartCoroutine("StayStill");
-					break;
-				default:
-					Debug.Log(this.gameObject.ToString() + " has invalid move.");
-					break;
-			}
-		}
-	}
-
-	IEnumerator StartAttack()
+	[Server]
+	public void StartAttack(GameObject pl)
 	{
-		if (!isServer)
-			yield break;
+		if (state == ZombieState.Attack) 
+			return;
 
-
-		if (!agent.enabled)
-			yield break;
-
-		Debug.Log ("Start Attack");
 		AudioSource.PlayClipAtPoint(attackSound, this.transform.position);
 		this.agent.speed = 4.0f;
-
-		while (state == ZombieState.Attack)
-		{
-			if (!agent.enabled)
-				yield break;
-
-			if(isDamaged)
-				agent.SetDestination(this.transform.position);
-			else
-				agent.SetDestination(player.transform.position);
-
-			if(Vector3.Distance(zombie.transform.position, player.transform.position) > 50f)
-			{
-				this.agent.speed = 1.0f;
-				agent.SetDestination(this.transform.position);
-				state = ZombieState.Idle;
-				this.StartCoroutine("StartPatrol");
-			}
-
-			yield return new WaitForSeconds(2.0f);
-		}
+		playerToAttack = pl;
+		state = ZombieState.Attack;
 	}
 
-	IEnumerator MoveForward()
-	{
-		if (!isServer)
-			yield break;
-
-
-		if (!agent.enabled)
-			yield break;
-		this.agent.SetDestination (this.transform.position + this.transform.forward * 5);
-
-		yield return new WaitForSeconds (3.0f);
-
-		this.agent.SetDestination (this.transform.position);
-	}
-
-	IEnumerator TurnRight()
-	{
-		if (!isServer)
-			yield break;
-
-		if (!agent.enabled)
-			yield break;
-		this.agent.SetDestination (this.transform.position + this.transform.right * 5);
-		
-		yield return new WaitForSeconds (3.0f);
-		
-		this.agent.SetDestination (this.transform.position);
-	}
-
-	IEnumerator TurnLeft()
-	{
-		if (!isServer)
-			yield break;
-
-		if (!agent.enabled)
-			yield break;
-
-		this.agent.SetDestination (this.transform.position + this.transform.right * -5);
-		
-		yield return new WaitForSeconds (3.0f);
-		
-		this.agent.SetDestination (this.transform.position);
-	}
-
-	IEnumerator StayStill()
-	{
-		if (!isServer)
-			yield break;
-
-		yield return new WaitForSeconds (1.0f);
-	}
-
-	void OnTriggerEnter(Collider collider)
-	{
-		if (!isServer)
-			return;
-
-		if (collider.name.Equals ("Player(Clone)") && (state == ZombieState.Idle || state == ZombieState.Move)) {
-			state = ZombieState.Attack;
-			player = collider.gameObject;
-
-			this.StopCoroutine("MoveToTarget");
-			this.StopCoroutine("TurnLeft");
-			this.StopCoroutine("TurnRight");
-			this.StopCoroutine("MoveForward");
-			this.StopCoroutine("StartPatrol");
-
-			if (!agent.enabled)
-				return;
-			agent.SetDestination(this.transform.position);
-
-			this.StartCoroutine("StartAttack");
-		}
-	}
-
+	[Server]
 	public void MoveToPos(Vector3 pos)
 	{
-		if (!isServer)
-			return;
-
-		if (state == ZombieState.Move) {
-			this.StopCoroutine("MoveToTarget");
-		}
-
-		if (state == ZombieState.Attack)
-			return;
-
-		player = null;
+		if (state == ZombieState.Attack) return;
+		agent.speed = 3.0f;
+		destination = pos;
 		state = ZombieState.Move;
-
-		this.StartCoroutine ("MoveToTarget", pos);
 	}
-
-
-	public IEnumerator MoveToTarget(Vector3 pos)
+	
+	void OnTriggerEnter(Collider collider)
 	{
-		if (!isServer)
-			yield break;
-
-		while (state == ZombieState.Move)
+		if (collider.name.StartsWith ("Player"))
 		{
-			agent.speed = 3.0f;
-			agent.SetDestination(pos);
+			if(state != ZombieState.Death && isServer)
+				StartAttack(collider.gameObject);
 
-			if(Vector3.Distance(zombie.transform.position, pos) < 2f || isDamaged)
+			if(!isServer)
 			{
-				agent.speed = 1.0f;
-				agent.SetDestination(this.transform.position);
-				state = ZombieState.Idle;
-				this.StartCoroutine("StartPatrol");
+				AudioSource.PlayClipAtPoint(attackSound, this.transform.position);
 			}
-			
-			yield return new WaitForSeconds(0.1f);
-		}
-	}
-
-
-	// Update is called once per frame
-	void Update ()
-	{
-		if (!isServer)
-		{
-			this.gameObject.transform.position = Vector3.Lerp(this.transform.position, pos, 0.9f);
-			this.gameObject.transform.localEulerAngles = Vector3.Lerp(this.transform.localEulerAngles, rot, 0.9f);
-
-		} else {
-			pos = this.transform.position;
-			rot = this.transform.localEulerAngles;
-		}
-	}
-
-	public IEnumerator ResetDamaged()
-	{
-		if (!isServer)
-			yield break;
-
-		isRecovering = true;
-		this.StopCoroutine("MoveToTarget");
-		this.StopCoroutine("TurnLeft");
-		this.StopCoroutine("TurnRight");
-		this.StopCoroutine("MoveForward");
-		this.StopCoroutine("StartPatrol");
-
-		yield return new WaitForSeconds (1.0f);
-
-		isDamaged = false;
-		isRecovering = false;
-
-		if (!(state == ZombieState.Attack))
-		{
-			state = ZombieState.Idle;
-			this.StartCoroutine ("StartPatrol");
 		}
 	}
 }

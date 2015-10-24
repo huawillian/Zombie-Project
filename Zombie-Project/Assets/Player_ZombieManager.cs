@@ -4,138 +4,122 @@ using UnityEngine.Networking;
 
 public class Player_ZombieManager : NetworkBehaviour
 {
+	public AudioClip damageSound;
+	public AudioClip deathSound;
+	public GameObject corpsePrefab;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-	public void SyncZombieHealth(GameObject zombie, int hp)
+	public void SyncDamageZombie(string zombieName, int damage)
 	{
-		if(isServer)
-		zombie.GetComponent<Zombie_Health> ().Health = hp;
-	}
-
-	public void SyncZombieDmg(GameObject zombie)
-	{
-		if (!isServer) {
-			Debug.Log ("SyncZOmbiedmg client");
-
-			CmdSyncZombieDmgToServer (zombie);
-			return;
-		} else {
-			zombie.GetComponentInChildren<Zombie_AnimatorController>().StartCoroutine("setHurt");
-			zombie.GetComponent<Zombie_BasicMovement> ().isDamaged = true;
-			zombie.GetComponent<Zombie_BasicMovement> ().StopCoroutine ("ResetDamaged");
-			zombie.GetComponent<Zombie_BasicMovement> ().StartCoroutine ("ResetDamaged");
+		if (isServer)
+		{
+			ServerSyncDamageZombie (zombieName, damage);
+		} else
+		{
+			CmdSyncDamageZombie(zombieName, damage);
 		}
 	}
-
-	[Command]
-	void CmdSyncZombieDmgToServer(GameObject zombie)
-	{
-		Debug.Log ("SyncZOmbiedmg Server");
-
-		RpcSyncDmg (zombie);
-		
-		zombie.GetComponentInChildren<Zombie_AnimatorController>().StartCoroutine("setHurt");
-		zombie.GetComponent<Zombie_BasicMovement> ().isDamaged = true;
-		zombie.GetComponent<Zombie_BasicMovement> ().StopCoroutine ("ResetDamaged");
-		zombie.GetComponent<Zombie_BasicMovement> ().StartCoroutine ("ResetDamaged");
-	}
-
+	
 	[ClientRpc]
-	void RpcSyncDmg(GameObject zombie)
+	private void RpcSyncDamageZombie(string zombieName)
 	{
-		Debug.Log ("SyncZOmbiedmg client1");
-
-		zombie.GetComponentInChildren<Zombie_AnimatorController>().StartCoroutine("setHurt");
-		zombie.GetComponent<Zombie_BasicMovement> ().isDamaged = true;
-		zombie.GetComponent<Zombie_BasicMovement> ().StopCoroutine ("ResetDamaged");
-		zombie.GetComponent<Zombie_BasicMovement> ().StartCoroutine ("ResetDamaged");
-	}
-
-	public void SyncZombieDeath(GameObject zombie)
-	{
-		if (!isServer) {
-			Debug.Log ("SyncZOmbieDeath Client");
-			CmdSyncZombieDeathToServer (zombie);
-			return;
-		} else {
-			Debug.Log ("SyncZOmbieDeath server");
-			zombie.GetComponent<Zombie_AnimatorController>().StartCoroutine("setDeath");
-			zombie.GetComponent<NavMeshAgent>().enabled = false;
-			zombie.GetComponent<Zombie_BasicMovement>().StopAllCoroutines();
-			
-			CapsuleCollider[] cols = zombie.GetComponentsInChildren<CapsuleCollider>();
-			
-			foreach(CapsuleCollider col in cols)
-			{
-				if(col.gameObject.activeInHierarchy)
-					col.gameObject.SetActive(false);
-			}
-			
-			zombie.GetComponent<Rigidbody>().isKinematic = true;
-			zombie.gameObject.name = "Corpse";
-			zombie.AddComponent<Search_Content>();
-			zombie.gameObject.tag = "Search";
-			zombie.AddComponent<BoxCollider>().isTrigger = true;
-		}
+		GameObject zombie = GameObject.Find(zombieName);
+		AudioSource.PlayClipAtPoint(damageSound, zombie.transform.position);
+		zombie.GetComponent<Zombie_AnimatorController> ().SetHurt ();
 	}
 
 	[Command]
-	void CmdSyncZombieDeathToServer(GameObject zombie)
+	private void CmdSyncDamageZombie(string zombieName, int damage)
 	{
-		RpcSyncDeath (zombie);
+		ServerSyncDamageZombie (zombieName, damage);
+	}
 
-		Debug.Log ("SyncZOmbieDeath server");
-		
-		RpcSyncDeath (zombie);
-		
-		zombie.GetComponent<Zombie_AnimatorController>().StartCoroutine("setDeath");
-		zombie.GetComponent<NavMeshAgent>().enabled = false;
-		zombie.GetComponent<Zombie_BasicMovement>().StopAllCoroutines();
-		
-		CapsuleCollider[] cols = zombie.GetComponentsInChildren<CapsuleCollider>();
-		
-		foreach(CapsuleCollider col in cols)
+	[Server]
+	private void ServerSyncDamageZombie(string zombieName, int damage)
+	{
+		GameObject zombie = GameObject.Find(zombieName);
+		zombie.GetComponent<Zombie_Health>().Health -= damage;
+		AudioSource.PlayClipAtPoint(damageSound, zombie.transform.position);
+		zombie.GetComponent<Zombie_AnimatorController> ().SetHurt ();
+		RpcSyncDamageZombie(zombieName);
+	}
+
+	public void SyncDeathZombie(string zombieName)
+	{
+		if (isServer)
+		{
+			ServerSyncDeathZombie (zombieName);
+		} else
+		{
+			CmdSyncDeathZombie(zombieName);
+		}
+	}
+	
+	[ClientRpc]
+	private void RpcSyncDeathZombie(string zombieName)
+	{
+		GameObject zombie = GameObject.Find(zombieName);
+		AudioSource.PlayClipAtPoint(deathSound, zombie.transform.position);
+		zombie.GetComponent<Zombie_AnimatorController> ().SetDeath ();
+		foreach(CapsuleCollider col in zombie.GetComponentsInChildren<CapsuleCollider>())
 		{
 			if(col.gameObject.activeInHierarchy)
 				col.gameObject.SetActive(false);
 		}
-
-		zombie.GetComponent<Rigidbody>().isKinematic = true;
-		zombie.gameObject.name = "Corpse";
-		zombie.AddComponent<Search_Content>();
-		zombie.gameObject.tag = "Search";
-		zombie.AddComponent<BoxCollider>().isTrigger = true;
+	}
+	
+	[Command]
+	private void CmdSyncDeathZombie(string zombieName)
+	{
+		ServerSyncDeathZombie (zombieName);
 	}
 
-
-	[ClientRpc]
-	void RpcSyncDeath(GameObject zombie)
+	[Server]
+	private void ServerSyncDeathZombie(string zombieName)
 	{
-		zombie.GetComponent<Zombie_AnimatorController>().StartCoroutine("setDeath");
-		zombie.GetComponent<NavMeshAgent>().enabled = false;
-		zombie.GetComponent<Zombie_BasicMovement>().StopAllCoroutines();
-		
-		CapsuleCollider[] cols = zombie.GetComponentsInChildren<CapsuleCollider>();
-		
-		foreach(CapsuleCollider col in cols)
+		GameObject zombie = GameObject.Find(zombieName);
+		AudioSource.PlayClipAtPoint(deathSound, zombie.transform.position);
+		zombie.GetComponent<Zombie_AnimatorController> ().SetDeath ();
+		zombie.GetComponent<Zombie_BasicMovement> ().SetDeath ();
+		foreach(CapsuleCollider col in zombie.GetComponentsInChildren<CapsuleCollider>())
 		{
 			if(col.gameObject.activeInHierarchy)
 				col.gameObject.SetActive(false);
 		}
-
-		zombie.GetComponent<Rigidbody>().isKinematic = true;
-		zombie.gameObject.name = "Corpse";
-		zombie.AddComponent<Search_Content>();
-		zombie.gameObject.tag = "Search";
-		zombie.AddComponent<BoxCollider>().isTrigger = true;
+		zombie.GetComponent<Rigidbody> ().isKinematic = true;
+		zombie.transform.position += Vector3.down;
+		StartCoroutine ("Despawn", zombieName);
+		
+		RpcSyncDeathZombie(zombieName);
 	}
+
+	[Server]
+	private IEnumerator Despawn(string zombieName)
+	{
+		GameObject zombie = GameObject.Find(zombieName);
+		yield return new WaitForSeconds(1.0f);
+		NetworkServer.Spawn((GameObject)Instantiate (corpsePrefab, zombie.transform.position + Vector3.up / 2.0f, Quaternion.identity));
+		Destroy (zombie.gameObject);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

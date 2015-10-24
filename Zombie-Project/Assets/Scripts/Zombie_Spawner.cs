@@ -18,7 +18,7 @@ public class Zombie_Spawner : NetworkBehaviour
 		while (true)
 		{
 
-			Collider[] hitColliders = Physics.OverlapSphere(this.transform.position , 10f);
+			Collider[] hitColliders = Physics.OverlapSphere(this.transform.position , 20f);
 			int zombies = 0;
 			bool playerNear = false;
 			foreach (Collider col in hitColliders)
@@ -34,7 +34,7 @@ public class Zombie_Spawner : NetworkBehaviour
 				}
 			}
 
-			if(!(zombies > 10) && !playerNear)
+			if(!(zombies > 5) && !playerNear && GameObject.FindGameObjectsWithTag("Zombie").Length < 50)
 			{
 				GameObject temp = (Instantiate(zombiePrefab, this.transform.position, Quaternion.identity) as GameObject);
 				temp.name = zombiePrefab.name;

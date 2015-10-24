@@ -261,6 +261,8 @@ public class Player_BasicMovement : NetworkBehaviour
 			if(state == MovementState.Sprinting)
 			{
 				staminaScript.UseStamina(2.0f);
+				if(staminaScript.Stamina == 0)
+					state = MovementState.Walking;
 			}
 		}
 	}

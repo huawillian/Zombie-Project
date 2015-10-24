@@ -31,7 +31,8 @@ public class Shove_Weapon : NetworkBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (isShoving) {
+		if (isShoving)
+		{
 			MeshRenderer[] renderers = weaponObject.GetComponentsInChildren<MeshRenderer> ();
 			
 			foreach (MeshRenderer r in renderers) {
@@ -46,15 +47,24 @@ public class Shove_Weapon : NetworkBehaviour
 		}
 	}
 
+	[Command]
+	void CmdSyncShove(bool s)
+	{
+		isShoving = s;
+	}
+
 	IEnumerator Attack()
 	{
 		if (!isLocalPlayer && !staminaScript.getRecoverStatus()) {
+			CmdSyncShove(true);
 			isShoving = true;
 			weaponObject.GetComponent<Animation>().Play();
 			
 			yield return new WaitForSeconds (weaponObject.GetComponent<Animation>().clip.length);
 			weaponObject.transform.localPosition = originalPosition;
 			weaponObject.transform.localEulerAngles = originalRotation;
+			CmdSyncShove(false);
+
 			isShoving = false;
 			yield break;
 		}
@@ -62,12 +72,16 @@ public class Shove_Weapon : NetworkBehaviour
 		if (!isShoving && !staminaScript.getRecoverStatus())
 		{
 			this.GetComponent<Player_Stamina>().UseStamina(10.0f);
+			CmdSyncShove(true);
+
 			isShoving = true;
 			weaponObject.GetComponent<Animation>().Play();
 			
 			yield return new WaitForSeconds (weaponObject.GetComponent<Animation>().clip.length);
 			weaponObject.transform.localPosition = originalPosition;
 			weaponObject.transform.localEulerAngles = originalRotation;
+			CmdSyncShove(false);
+
 			isShoving = false;
 		} else
 			yield return new WaitForSeconds (0.01f);
@@ -79,51 +93,13 @@ public class Shove_Weapon : NetworkBehaviour
 		if (!isLocalPlayer)
 			return;
 
-		if (collider.name == "Renderer and Collider" && (collider.transform.parent.name == "Zombie" || collider.transform.parent.name == "Zombie(Clone)")) {
+		if (collider.name == "Renderer and Collider" && collider.transform.parent.name.StartsWith("Zombie")) {
 			if (isShoving) {	
 				AudioSource.PlayClipAtPoint (hitSound, weaponObject.transform.position);
 				Debug.Log ("Adding force, shoving zombie away from player");
-
-				if (!collider.GetComponentInParent<Zombie_BasicMovement> ().isDamaged)
-					collider.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (20);
-				
+				collider.transform.parent.gameObject.GetComponent<Zombie_Health> ().damageZombie (20);
 				collider.transform.parent.gameObject.GetComponent<Rigidbody> ().AddForce (weaponObject.transform.forward * 300f);
 			}
-		} else
-		if (collider.name.StartsWith("Box")) {
-			if (isShoving) {	
-				AudioSource.PlayClipAtPoint (hitSound, weaponObject.transform.position);
-				collider.gameObject.GetComponent<Rigidbody> ().AddExplosionForce (1000, collider.transform.position - weaponObject.transform.forward, 5);
-				weaponObject.GetComponentInParent<Player_Noise> ().GenerateNoiseAtPlayerWithDistance (3f);
-				collider.gameObject.GetComponent<Box_Controller> ().Health -= 10;
-
-				if(collider.gameObject.GetComponent<Box_Controller> ().Health == 0)
-				{
-					if(isServer)
-					{
-						RpcDestroybx(collider.gameObject);
-						Destroy(collider.gameObject);
-					}
-					else
-					{
-						CmdDestroybx(collider.gameObject);
-					}
-				}
-
-			}
-		}
+		} 
 	}
-
-	[ClientRpc]
-	void RpcDestroybx(GameObject obj)
-	{
-		Destroy(obj);
-	}
-	
-	[Command]
-	void CmdDestroybx(GameObject obj)
-	{
-		RpcDestroybx (obj);
-	}
-
 }
